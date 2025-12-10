@@ -1,0 +1,495 @@
+--------- beginning of radio
+12-09 20:33:50.568 D/SST     ( 2186): [0] EVENT_GET_CELL_INFO_LIST: error ret null, e=com.android.internal.telephony.CommandException: RADIO_NOT_AVAILABLE
+12-09 20:33:50.610 D/SubscriptionController( 2186): getSimStateForSlotIndex:  simState=LOADED ordinal=10 slotIndex=0
+12-09 20:33:50.779 D/SubscriptionController( 2186): getSimStateForSlotIndex:  simState=LOADED ordinal=10 slotIndex=0
+12-09 20:33:50.785 D/SubscriptionController( 2186): getSimStateForSlotIndex:  simState=LOADED ordinal=10 slotIndex=0
+12-09 20:33:50.792 D/SubscriptionController( 2186): getSimStateForSlotIndex:  simState=LOADED ordinal=10 slotIndex=0
+12-09 20:33:50.800 D/SubscriptionController( 2186): [getSubId]- numSubIds == 0, return null slotIndex=1
+12-09 20:33:50.801 D/SubscriptionController( 2186): getSimStateForSlotIndex:  simState=ABSENT ordinal=1 slotIndex=1
+12-09 20:33:50.802 D/SubscriptionController( 2186): getSimStateForSlotIndex:  simState=ABSENT ordinal=1 slotIndex=1
+12-09 20:33:51.821 D/SubscriptionController( 2186): getSimStateForSlotIndex:  simState=LOADED ordinal=10 slotIndex=0
+12-09 20:33:51.825 D/SubscriptionController( 2186): getSimStateForSlotIndex:  simState=LOADED ordinal=10 slotIndex=0
+12-09 20:33:51.837 D/SubscriptionController( 2186): [getSubId]- numSubIds == 0, return null slotIndex=1
+12-09 20:33:51.837 D/SubscriptionController( 2186): getSimStateForSlotIndex:  simState=ABSENT ordinal=1 slotIndex=1
+12-09 20:33:51.838 D/SubscriptionController( 2186): getSimStateForSlotIndex:  simState=ABSENT ordinal=1 slotIndex=1
+12-09 20:33:52.857 D/SubscriptionController( 2186): getSimStateForSlotIndex:  simState=LOADED ordinal=10 slotIndex=0
+12-09 20:33:52.860 D/SubscriptionController( 2186): getSimStateForSlotIndex:  simState=LOADED ordinal=10 slotIndex=0
+12-09 20:33:52.871 D/SubscriptionController( 2186): [getSubId]- numSubIds == 0, return null slotIndex=1
+12-09 20:33:52.871 D/SubscriptionController( 2186): getSimStateForSlotIndex:  simState=ABSENT ordinal=1 slotIndex=1
+12-09 20:33:52.872 D/SubscriptionController( 2186): getSimStateForSlotIndex:  simState=ABSENT ordinal=1 slotIndex=1
+12-09 20:33:53.612 D/SubscriptionController( 2186): getSimStateForSlotIndex:  simState=LOADED ordinal=10 slotIndex=0
+12-09 20:33:53.624 D/SubscriptionController( 2186): getSimStateForSlotIndex:  simState=LOADED ordinal=10 slotIndex=0
+12-09 20:33:53.647 D/SST-SEM ( 2186): [0] requestAllCellInfo - UID: 1001, PID: 2186
+12-09 20:33:53.648 D/RILJ    ( 2186): [1170]> RIL_REQUEST_GET_CELL_INFO_LIST [PHONE0]
+12-09 20:33:53.649 D/RILJ    ( 2186): [1170]< RIL_REQUEST_GET_CELL_INFO_LIST error 1 [PHONE0]
+12-09 20:33:53.649 D/RilRequest( 2186): [1170]< RIL_REQUEST_GET_CELL_INFO_LIST error: com.android.internal.telephony.CommandException: RADIO_NOT_AVAILABLE ret=[] result={ when=-22d3h32m16s62ms what=43 target=com.android.internal.telephony.SemServiceStateTracker }
+12-09 20:33:53.649 D/SST     ( 2186): [0] EVENT_GET_CELL_INFO_LIST: error ret null, e=com.android.internal.telephony.CommandException: RADIO_NOT_AVAILABLE
+12-09 20:33:53.899 D/SubscriptionController( 2186): getSimStateForSlotIndex:  simState=LOADED ordinal=10 slotIndex=0
+12-09 20:33:53.901 D/SubscriptionController( 2186): getSimStateForSlotIndex:  simState=LOADED ordinal=10 slotIndex=0
+12-09 20:33:53.914 D/SubscriptionController( 2186): [getSubId]- numSubIds == 0, return null slotIndex=1
+12-09 20:33:53.914 D/SubscriptionController( 2186): getSimStateForSlotIndex:  simState=ABSENT ordinal=1 slotIndex=1
+12-09 20:33:53.916 D/SubscriptionController( 2186): getSimStateForSlotIndex:  simState=ABSENT ordinal=1 slotIndex=1
+12-09 20:33:54.941 D/SubscriptionController( 2186): getSimStateForSlotIndex:  simState=LOADED ordinal=10 slotIndex=0
+12-09 20:33:54.944 D/SubscriptionController( 2186): getSimStateForSlotIndex:  simState=LOADED ordinal=10 slotIndex=0
+12-09 20:33:54.954 D/SubscriptionController( 2186): [getSubId]- numSubIds == 0, return null slotIndex=1
+12-09 20:33:54.955 D/SubscriptionController( 2186): getSimStateForSlotIndex:  simState=ABSENT ordinal=1 slotIndex=1
+12-09 20:33:54.955 D/SubscriptionController( 2186): getSimStateForSlotIndex:  simState=ABSENT ordinal=1 slotIndex=1
+12-09 20:33:55.975 D/SubscriptionController( 2186): getSimStateForSlotIndex:  simState=LOADED ordinal=10 slotIndex=0
+12-09 20:33:55.977 D/SubscriptionController( 2186): getSimStateForSlotIndex:  simState=LOADED ordinal=10 slotIndex=0
+12-09 20:33:55.993 D/SubscriptionController( 2186): [getSubId]- numSubIds == 0, return null slotIndex=1
+12-09 20:33:55.994 D/SubscriptionController( 2186): getSimStateForSlotIndex:  simState=ABSENT ordinal=1 slotIndex=1
+12-09 20:33:55.995 D/SubscriptionController( 2186): getSimStateForSlotIndex:  simState=ABSENT ordinal=1 slotIndex=1
+12-09 20:33:56.207 D/TelephonyManager( 4620): getCellLocation - caller PID:4620, UID: 10094, TID: 31444
+12-09 20:33:56.211 D/SST-SEM ( 2186): [0] requestCellIdentity - UID: 1001, PID: 2186
+12-09 20:33:56.211 D/SST-SEM ( 2186): [0] requestAllCellInfo - UID: 1001, PID: 2186
+12-09 20:33:56.214 D/RILJ    ( 2186): [1171]> RIL_REQUEST_GET_CELL_INFO_LIST [PHONE0]
+12-09 20:33:56.215 D/RILJ    ( 2186): [1171]< RIL_REQUEST_GET_CELL_INFO_LIST error 1 [PHONE0]
+12-09 20:33:56.215 D/RilRequest( 2186): [1171]< RIL_REQUEST_GET_CELL_INFO_LIST error: com.android.internal.telephony.CommandException: RADIO_NOT_AVAILABLE ret=[] result={ when=-22d3h32m18s628ms what=43 target=com.android.internal.telephony.SemServiceStateTracker }
+12-09 20:33:56.217 D/SST     ( 2186): [0] EVENT_GET_CELL_INFO_LIST: error ret null, e=com.android.internal.telephony.CommandException: RADIO_NOT_AVAILABLE
+12-09 20:33:56.218 D/TelephonyManager( 4620): getCellLocation returning null because CellLocation is empty or phone type doesn't match CellLocation type
+12-09 20:33:56.225 D/TelephonyManager( 4620): getCellLocation - caller PID:4620, UID: 10094, TID: 31444
+12-09 20:33:56.227 D/SST-SEM ( 2186): [0] requestCellIdentity - UID: 1001, PID: 2186
+12-09 20:33:56.227 D/SST-SEM ( 2186): [0] requestAllCellInfo - UID: 1001, PID: 2186
+12-09 20:33:56.227 D/SST     ( 2186): [0] SST.requestAllCellInfo(): return last, back to back calls
+12-09 20:33:56.227 D/TelephonyManager( 4620): getCellLocation returning null because CellLocation is empty or phone type doesn't match CellLocation type
+12-09 20:33:56.681 D/SubscriptionController( 2186): getSimStateForSlotIndex:  simState=LOADED ordinal=10 slotIndex=0
+12-09 20:33:56.696 D/SubscriptionController( 2186): getSimStateForSlotIndex:  simState=LOADED ordinal=10 slotIndex=0
+12-09 20:33:56.709 D/SST-SEM ( 2186): [0] requestAllCellInfo - UID: 1001, PID: 2186
+12-09 20:33:56.709 D/SST     ( 2186): [0] SST.requestAllCellInfo(): return last, back to back calls
+12-09 20:33:57.023 D/SubscriptionController( 2186): getSimStateForSlotIndex:  simState=LOADED ordinal=10 slotIndex=0
+12-09 20:33:57.025 D/SubscriptionController( 2186): getSimStateForSlotIndex:  simState=LOADED ordinal=10 slotIndex=0
+12-09 20:33:57.038 D/SubscriptionController( 2186): [getSubId]- numSubIds == 0, return null slotIndex=1
+12-09 20:33:57.039 D/SubscriptionController( 2186): getSimStateForSlotIndex:  simState=ABSENT ordinal=1 slotIndex=1
+12-09 20:33:57.041 D/SubscriptionController( 2186): getSimStateForSlotIndex:  simState=ABSENT ordinal=1 slotIndex=1
+12-09 20:33:58.062 D/SubscriptionController( 2186): getSimStateForSlotIndex:  simState=LOADED ordinal=10 slotIndex=0
+12-09 20:33:58.064 D/SubscriptionController( 2186): getSimStateForSlotIndex:  simState=LOADED ordinal=10 slotIndex=0
+12-09 20:33:58.079 D/SubscriptionController( 2186): [getSubId]- numSubIds == 0, return null slotIndex=1
+12-09 20:33:58.080 D/SubscriptionController( 2186): getSimStateForSlotIndex:  simState=ABSENT ordinal=1 slotIndex=1
+12-09 20:33:58.082 D/SubscriptionController( 2186): getSimStateForSlotIndex:  simState=ABSENT ordinal=1 slotIndex=1
+12-09 20:33:59.106 D/SubscriptionController( 2186): getSimStateForSlotIndex:  simState=LOADED ordinal=10 slotIndex=0
+12-09 20:33:59.109 D/SubscriptionController( 2186): getSimStateForSlotIndex:  simState=LOADED ordinal=10 slotIndex=0
+12-09 20:33:59.121 D/SubscriptionController( 2186): [getSubId]- numSubIds == 0, return null slotIndex=1
+12-09 20:33:59.122 D/SubscriptionController( 2186): getSimStateForSlotIndex:  simState=ABSENT ordinal=1 slotIndex=1
+12-09 20:33:59.123 D/SubscriptionController( 2186): getSimStateForSlotIndex:  simState=ABSENT ordinal=1 slotIndex=1
+12-09 20:33:59.743 D/SubscriptionController( 2186): getSimStateForSlotIndex:  simState=LOADED ordinal=10 slotIndex=0
+12-09 20:33:59.750 D/SubscriptionController( 2186): getSimStateForSlotIndex:  simState=LOADED ordinal=10 slotIndex=0
+12-09 20:33:59.761 D/SST-SEM ( 2186): [0] requestAllCellInfo - UID: 1001, PID: 2186
+12-09 20:33:59.763 D/RILJ    ( 2186): [1172]> RIL_REQUEST_GET_CELL_INFO_LIST [PHONE0]
+12-09 20:33:59.764 D/RILJ    ( 2186): [1172]< RIL_REQUEST_GET_CELL_INFO_LIST error 1 [PHONE0]
+12-09 20:33:59.764 D/RilRequest( 2186): [1172]< RIL_REQUEST_GET_CELL_INFO_LIST error: com.android.internal.telephony.CommandException: RADIO_NOT_AVAILABLE ret=[] result={ when=-22d3h32m22s176ms what=43 target=com.android.internal.telephony.SemServiceStateTracker }
+12-09 20:33:59.764 D/SST     ( 2186): [0] EVENT_GET_CELL_INFO_LIST: error ret null, e=com.android.internal.telephony.CommandException: RADIO_NOT_AVAILABLE
+12-09 20:34:00.144 D/SubscriptionController( 2186): getSimStateForSlotIndex:  simState=LOADED ordinal=10 slotIndex=0
+12-09 20:34:00.146 D/SubscriptionController( 2186): getSimStateForSlotIndex:  simState=LOADED ordinal=10 slotIndex=0
+12-09 20:34:00.157 D/SubscriptionController( 2186): [getSubId]- numSubIds == 0, return null slotIndex=1
+12-09 20:34:00.157 D/SubscriptionController( 2186): getSimStateForSlotIndex:  simState=ABSENT ordinal=1 slotIndex=1
+12-09 20:34:00.158 D/SubscriptionController( 2186): getSimStateForSlotIndex:  simState=ABSENT ordinal=1 slotIndex=1
+12-09 20:34:01.180 D/SubscriptionController( 2186): getSimStateForSlotIndex:  simState=LOADED ordinal=10 slotIndex=0
+12-09 20:34:01.184 D/SubscriptionController( 2186): getSimStateForSlotIndex:  simState=LOADED ordinal=10 slotIndex=0
+12-09 20:34:01.198 D/SubscriptionController( 2186): [getSubId]- numSubIds == 0, return null slotIndex=1
+12-09 20:34:01.199 D/SubscriptionController( 2186): getSimStateForSlotIndex:  simState=ABSENT ordinal=1 slotIndex=1
+12-09 20:34:01.200 D/SubscriptionController( 2186): getSimStateForSlotIndex:  simState=ABSENT ordinal=1 slotIndex=1
+12-09 20:34:02.226 D/SubscriptionController( 2186): getSimStateForSlotIndex:  simState=LOADED ordinal=10 slotIndex=0
+12-09 20:34:02.230 D/SubscriptionController( 2186): getSimStateForSlotIndex:  simState=LOADED ordinal=10 slotIndex=0
+12-09 20:34:02.244 D/SubscriptionController( 2186): [getSubId]- numSubIds == 0, return null slotIndex=1
+12-09 20:34:02.244 D/SubscriptionController( 2186): getSimStateForSlotIndex:  simState=ABSENT ordinal=1 slotIndex=1
+12-09 20:34:02.245 D/SubscriptionController( 2186): getSimStateForSlotIndex:  simState=ABSENT ordinal=1 slotIndex=1
+12-09 20:34:02.799 D/SubscriptionController( 2186): getSimStateForSlotIndex:  simState=LOADED ordinal=10 slotIndex=0
+12-09 20:34:02.808 D/SubscriptionController( 2186): getSimStateForSlotIndex:  simState=LOADED ordinal=10 slotIndex=0
+12-09 20:34:02.825 D/SST-SEM ( 2186): [0] requestAllCellInfo - UID: 1001, PID: 2186
+12-09 20:34:02.826 D/RILJ    ( 2186): [1173]> RIL_REQUEST_GET_CELL_INFO_LIST [PHONE0]
+12-09 20:34:02.827 D/RILJ    ( 2186): [1173]< RIL_REQUEST_GET_CELL_INFO_LIST error 1 [PHONE0]
+12-09 20:34:02.827 D/RilRequest( 2186): [1173]< RIL_REQUEST_GET_CELL_INFO_LIST error: com.android.internal.telephony.CommandException: RADIO_NOT_AVAILABLE ret=[] result={ when=-22d3h32m25s240ms what=43 target=com.android.internal.telephony.SemServiceStateTracker }
+12-09 20:34:02.827 D/SST     ( 2186): [0] EVENT_GET_CELL_INFO_LIST: error ret null, e=com.android.internal.telephony.CommandException: RADIO_NOT_AVAILABLE
+12-09 20:34:02.923 D/ARGOS   ( 3398): argos: argos_monitor: Mbps:20 prev_tput:0
+12-09 20:34:03.267 D/SubscriptionController( 2186): getSimStateForSlotIndex:  simState=LOADED ordinal=10 slotIndex=0
+12-09 20:34:03.269 D/SubscriptionController( 2186): getSimStateForSlotIndex:  simState=LOADED ordinal=10 slotIndex=0
+12-09 20:34:03.280 D/SubscriptionController( 2186): [getSubId]- numSubIds == 0, return null slotIndex=1
+12-09 20:34:03.281 D/SubscriptionController( 2186): getSimStateForSlotIndex:  simState=ABSENT ordinal=1 slotIndex=1
+12-09 20:34:03.282 D/SubscriptionController( 2186): getSimStateForSlotIndex:  simState=ABSENT ordinal=1 slotIndex=1
+12-09 20:34:03.925 D/ARGOS   ( 3398): argos: argos_monitor: Mbps:0 prev_tput:20
+12-09 20:34:04.305 D/SubscriptionController( 2186): getSimStateForSlotIndex:  simState=LOADED ordinal=10 slotIndex=0
+12-09 20:34:04.308 D/SubscriptionController( 2186): getSimStateForSlotIndex:  simState=LOADED ordinal=10 slotIndex=0
+12-09 20:34:04.318 D/SubscriptionController( 2186): [getSubId]- numSubIds == 0, return null slotIndex=1
+12-09 20:34:04.319 D/SubscriptionController( 2186): getSimStateForSlotIndex:  simState=ABSENT ordinal=1 slotIndex=1
+12-09 20:34:04.319 D/SubscriptionController( 2186): getSimStateForSlotIndex:  simState=ABSENT ordinal=1 slotIndex=1
+12-09 20:34:05.340 D/SubscriptionController( 2186): getSimStateForSlotIndex:  simState=LOADED ordinal=10 slotIndex=0
+12-09 20:34:05.343 D/SubscriptionController( 2186): getSimStateForSlotIndex:  simState=LOADED ordinal=10 slotIndex=0
+12-09 20:34:05.355 D/SubscriptionController( 2186): [getSubId]- numSubIds == 0, return null slotIndex=1
+12-09 20:34:05.355 D/SubscriptionController( 2186): getSimStateForSlotIndex:  simState=ABSENT ordinal=1 slotIndex=1
+12-09 20:34:05.356 D/SubscriptionController( 2186): getSimStateForSlotIndex:  simState=ABSENT ordinal=1 slotIndex=1
+12-09 20:34:05.861 D/SubscriptionController( 2186): getSimStateForSlotIndex:  simState=LOADED ordinal=10 slotIndex=0
+12-09 20:34:05.869 D/SubscriptionController( 2186): getSimStateForSlotIndex:  simState=LOADED ordinal=10 slotIndex=0
+12-09 20:34:05.880 D/SST-SEM ( 2186): [0] requestAllCellInfo - UID: 1001, PID: 2186
+12-09 20:34:05.881 D/RILJ    ( 2186): [1174]> RIL_REQUEST_GET_CELL_INFO_LIST [PHONE0]
+12-09 20:34:05.882 D/RILJ    ( 2186): [1174]< RIL_REQUEST_GET_CELL_INFO_LIST error 1 [PHONE0]
+12-09 20:34:05.882 D/RilRequest( 2186): [1174]< RIL_REQUEST_GET_CELL_INFO_LIST error: com.android.internal.telephony.CommandException: RADIO_NOT_AVAILABLE ret=[] result={ when=-22d3h32m28s295ms what=43 target=com.android.internal.telephony.SemServiceStateTracker }
+12-09 20:34:05.883 D/SST     ( 2186): [0] EVENT_GET_CELL_INFO_LIST: error ret null, e=com.android.internal.telephony.CommandException: RADIO_NOT_AVAILABLE
+12-09 20:34:06.203 D/TelephonyManager( 4620): getCellLocation - caller PID:4620, UID: 10094, TID: 31444
+12-09 20:34:06.205 D/SST-SEM ( 2186): [0] requestCellIdentity - UID: 1001, PID: 2186
+12-09 20:34:06.205 D/SST-SEM ( 2186): [0] requestAllCellInfo - UID: 1001, PID: 2186
+12-09 20:34:06.206 D/SST     ( 2186): [0] SST.requestAllCellInfo(): return last, back to back calls
+12-09 20:34:06.206 D/TelephonyManager( 4620): getCellLocation returning null because CellLocation is empty or phone type doesn't match CellLocation type
+12-09 20:34:06.210 D/TelephonyManager( 4620): getCellLocation - caller PID:4620, UID: 10094, TID: 31444
+12-09 20:34:06.212 D/SST-SEM ( 2186): [0] requestCellIdentity - UID: 1001, PID: 2186
+12-09 20:34:06.212 D/SST-SEM ( 2186): [0] requestAllCellInfo - UID: 1001, PID: 2186
+12-09 20:34:06.212 D/SST     ( 2186): [0] SST.requestAllCellInfo(): return last, back to back calls
+12-09 20:34:06.212 D/TelephonyManager( 4620): getCellLocation returning null because CellLocation is empty or phone type doesn't match CellLocation type
+12-09 20:34:06.373 D/SubscriptionController( 2186): getSimStateForSlotIndex:  simState=LOADED ordinal=10 slotIndex=0
+12-09 20:34:06.376 D/SubscriptionController( 2186): getSimStateForSlotIndex:  simState=LOADED ordinal=10 slotIndex=0
+12-09 20:34:06.388 D/SubscriptionController( 2186): [getSubId]- numSubIds == 0, return null slotIndex=1
+12-09 20:34:06.389 D/SubscriptionController( 2186): getSimStateForSlotIndex:  simState=ABSENT ordinal=1 slotIndex=1
+12-09 20:34:06.390 D/SubscriptionController( 2186): getSimStateForSlotIndex:  simState=ABSENT ordinal=1 slotIndex=1
+12-09 20:34:07.413 D/SubscriptionController( 2186): getSimStateForSlotIndex:  simState=LOADED ordinal=10 slotIndex=0
+12-09 20:34:07.417 D/SubscriptionController( 2186): getSimStateForSlotIndex:  simState=LOADED ordinal=10 slotIndex=0
+12-09 20:34:07.432 D/SubscriptionController( 2186): [getSubId]- numSubIds == 0, return null slotIndex=1
+12-09 20:34:07.433 D/SubscriptionController( 2186): getSimStateForSlotIndex:  simState=ABSENT ordinal=1 slotIndex=1
+12-09 20:34:07.434 D/SubscriptionController( 2186): getSimStateForSlotIndex:  simState=ABSENT ordinal=1 slotIndex=1
+12-09 20:34:08.459 D/SubscriptionController( 2186): getSimStateForSlotIndex:  simState=LOADED ordinal=10 slotIndex=0
+12-09 20:34:08.463 D/SubscriptionController( 2186): getSimStateForSlotIndex:  simState=LOADED ordinal=10 slotIndex=0
+12-09 20:34:08.476 D/SubscriptionController( 2186): [getSubId]- numSubIds == 0, return null slotIndex=1
+12-09 20:34:08.476 D/SubscriptionController( 2186): getSimStateForSlotIndex:  simState=ABSENT ordinal=1 slotIndex=1
+12-09 20:34:08.477 D/SubscriptionController( 2186): getSimStateForSlotIndex:  simState=ABSENT ordinal=1 slotIndex=1
+12-09 20:34:08.914 D/SubscriptionController( 2186): getSimStateForSlotIndex:  simState=LOADED ordinal=10 slotIndex=0
+12-09 20:34:08.921 D/SubscriptionController( 2186): getSimStateForSlotIndex:  simState=LOADED ordinal=10 slotIndex=0
+12-09 20:34:08.931 D/SST-SEM ( 2186): [0] requestAllCellInfo - UID: 1001, PID: 2186
+12-09 20:34:08.932 D/RILJ    ( 2186): [1175]> RIL_REQUEST_GET_CELL_INFO_LIST [PHONE0]
+12-09 20:34:08.933 D/RILJ    ( 2186): [1175]< RIL_REQUEST_GET_CELL_INFO_LIST error 1 [PHONE0]
+12-09 20:34:08.933 D/RilRequest( 2186): [1175]< RIL_REQUEST_GET_CELL_INFO_LIST error: com.android.internal.telephony.CommandException: RADIO_NOT_AVAILABLE ret=[] result={ when=-22d3h32m31s346ms what=43 target=com.android.internal.telephony.SemServiceStateTracker }
+12-09 20:34:08.933 D/SST     ( 2186): [0] EVENT_GET_CELL_INFO_LIST: error ret null, e=com.android.internal.telephony.CommandException: RADIO_NOT_AVAILABLE
+12-09 20:34:09.501 D/SubscriptionController( 2186): getSimStateForSlotIndex:  simState=LOADED ordinal=10 slotIndex=0
+12-09 20:34:09.504 D/SubscriptionController( 2186): getSimStateForSlotIndex:  simState=LOADED ordinal=10 slotIndex=0
+12-09 20:34:09.516 D/SubscriptionController( 2186): [getSubId]- numSubIds == 0, return null slotIndex=1
+12-09 20:34:09.517 D/SubscriptionController( 2186): getSimStateForSlotIndex:  simState=ABSENT ordinal=1 slotIndex=1
+12-09 20:34:09.517 D/SubscriptionController( 2186): getSimStateForSlotIndex:  simState=ABSENT ordinal=1 slotIndex=1
+12-09 20:34:10.536 D/SubscriptionController( 2186): getSimStateForSlotIndex:  simState=LOADED ordinal=10 slotIndex=0
+12-09 20:34:10.539 D/SubscriptionController( 2186): getSimStateForSlotIndex:  simState=LOADED ordinal=10 slotIndex=0
+12-09 20:34:10.561 D/SubscriptionController( 2186): [getSubId]- numSubIds == 0, return null slotIndex=1
+12-09 20:34:10.562 D/SubscriptionController( 2186): getSimStateForSlotIndex:  simState=ABSENT ordinal=1 slotIndex=1
+12-09 20:34:10.563 D/SubscriptionController( 2186): getSimStateForSlotIndex:  simState=ABSENT ordinal=1 slotIndex=1
+12-09 20:34:11.587 D/SubscriptionController( 2186): getSimStateForSlotIndex:  simState=LOADED ordinal=10 slotIndex=0
+12-09 20:34:11.590 D/SubscriptionController( 2186): getSimStateForSlotIndex:  simState=LOADED ordinal=10 slotIndex=0
+12-09 20:34:11.602 D/SubscriptionController( 2186): [getSubId]- numSubIds == 0, return null slotIndex=1
+12-09 20:34:11.603 D/SubscriptionController( 2186): getSimStateForSlotIndex:  simState=ABSENT ordinal=1 slotIndex=1
+12-09 20:34:11.604 D/SubscriptionController( 2186): getSimStateForSlotIndex:  simState=ABSENT ordinal=1 slotIndex=1
+12-09 20:34:11.960 D/SubscriptionController( 2186): getSimStateForSlotIndex:  simState=LOADED ordinal=10 slotIndex=0
+12-09 20:34:11.967 D/SubscriptionController( 2186): getSimStateForSlotIndex:  simState=LOADED ordinal=10 slotIndex=0
+12-09 20:34:11.986 D/SST-SEM ( 2186): [0] requestAllCellInfo - UID: 1001, PID: 2186
+12-09 20:34:11.989 D/RILJ    ( 2186): [1176]> RIL_REQUEST_GET_CELL_INFO_LIST [PHONE0]
+12-09 20:34:11.989 D/RILJ    ( 2186): [1176]< RIL_REQUEST_GET_CELL_INFO_LIST error 1 [PHONE0]
+12-09 20:34:11.990 D/RilRequest( 2186): [1176]< RIL_REQUEST_GET_CELL_INFO_LIST error: com.android.internal.telephony.CommandException: RADIO_NOT_AVAILABLE ret=[] result={ when=-22d3h32m34s402ms what=43 target=com.android.internal.telephony.SemServiceStateTracker }
+12-09 20:34:11.990 D/SST     ( 2186): [0] EVENT_GET_CELL_INFO_LIST: error ret null, e=com.android.internal.telephony.CommandException: RADIO_NOT_AVAILABLE
+12-09 20:34:12.624 D/SubscriptionController( 2186): getSimStateForSlotIndex:  simState=LOADED ordinal=10 slotIndex=0
+12-09 20:34:12.626 D/SubscriptionController( 2186): getSimStateForSlotIndex:  simState=LOADED ordinal=10 slotIndex=0
+12-09 20:34:12.658 D/SubscriptionController( 2186): [getSubId]- numSubIds == 0, return null slotIndex=1
+12-09 20:34:12.659 D/SubscriptionController( 2186): getSimStateForSlotIndex:  simState=ABSENT ordinal=1 slotIndex=1
+12-09 20:34:12.660 D/SubscriptionController( 2186): getSimStateForSlotIndex:  simState=ABSENT ordinal=1 slotIndex=1
+12-09 20:34:13.677 D/SubscriptionController( 2186): getSimStateForSlotIndex:  simState=LOADED ordinal=10 slotIndex=0
+12-09 20:34:13.680 D/SubscriptionController( 2186): getSimStateForSlotIndex:  simState=LOADED ordinal=10 slotIndex=0
+12-09 20:34:13.691 D/SubscriptionController( 2186): [getSubId]- numSubIds == 0, return null slotIndex=1
+12-09 20:34:13.691 D/SubscriptionController( 2186): getSimStateForSlotIndex:  simState=ABSENT ordinal=1 slotIndex=1
+12-09 20:34:13.692 D/SubscriptionController( 2186): getSimStateForSlotIndex:  simState=ABSENT ordinal=1 slotIndex=1
+12-09 20:34:14.710 D/SubscriptionController( 2186): getSimStateForSlotIndex:  simState=LOADED ordinal=10 slotIndex=0
+12-09 20:34:14.713 D/SubscriptionController( 2186): getSimStateForSlotIndex:  simState=LOADED ordinal=10 slotIndex=0
+12-09 20:34:14.733 D/SubscriptionController( 2186): [getSubId]- numSubIds == 0, return null slotIndex=1
+12-09 20:34:14.733 D/SubscriptionController( 2186): getSimStateForSlotIndex:  simState=ABSENT ordinal=1 slotIndex=1
+12-09 20:34:14.734 D/SubscriptionController( 2186): getSimStateForSlotIndex:  simState=ABSENT ordinal=1 slotIndex=1
+12-09 20:34:15.028 D/SubscriptionController( 2186): getSimStateForSlotIndex:  simState=LOADED ordinal=10 slotIndex=0
+12-09 20:34:15.037 D/SubscriptionController( 2186): getSimStateForSlotIndex:  simState=LOADED ordinal=10 slotIndex=0
+12-09 20:34:15.054 D/SST-SEM ( 2186): [0] requestAllCellInfo - UID: 1001, PID: 2186
+12-09 20:34:15.055 D/RILJ    ( 2186): [1177]> RIL_REQUEST_GET_CELL_INFO_LIST [PHONE0]
+12-09 20:34:15.056 D/RILJ    ( 2186): [1177]< RIL_REQUEST_GET_CELL_INFO_LIST error 1 [PHONE0]
+12-09 20:34:15.056 D/RilRequest( 2186): [1177]< RIL_REQUEST_GET_CELL_INFO_LIST error: com.android.internal.telephony.CommandException: RADIO_NOT_AVAILABLE ret=[] result={ when=-22d3h32m37s469ms what=43 target=com.android.internal.telephony.SemServiceStateTracker }
+12-09 20:34:15.057 D/SST     ( 2186): [0] EVENT_GET_CELL_INFO_LIST: error ret null, e=com.android.internal.telephony.CommandException: RADIO_NOT_AVAILABLE
+12-09 20:34:15.755 D/SubscriptionController( 2186): getSimStateForSlotIndex:  simState=LOADED ordinal=10 slotIndex=0
+12-09 20:34:15.758 D/SubscriptionController( 2186): getSimStateForSlotIndex:  simState=LOADED ordinal=10 slotIndex=0
+12-09 20:34:15.771 D/SubscriptionController( 2186): [getSubId]- numSubIds == 0, return null slotIndex=1
+12-09 20:34:15.772 D/SubscriptionController( 2186): getSimStateForSlotIndex:  simState=ABSENT ordinal=1 slotIndex=1
+12-09 20:34:15.773 D/SubscriptionController( 2186): getSimStateForSlotIndex:  simState=ABSENT ordinal=1 slotIndex=1
+12-09 20:34:16.205 D/TelephonyManager( 4620): getCellLocation - caller PID:4620, UID: 10094, TID: 31444
+12-09 20:34:16.209 D/SST-SEM ( 2186): [0] requestCellIdentity - UID: 1001, PID: 2186
+12-09 20:34:16.210 D/SST-SEM ( 2186): [0] requestAllCellInfo - UID: 1001, PID: 2186
+12-09 20:34:16.210 D/SST     ( 2186): [0] SST.requestAllCellInfo(): return last, back to back calls
+12-09 20:34:16.210 D/TelephonyManager( 4620): getCellLocation returning null because CellLocation is empty or phone type doesn't match CellLocation type
+12-09 20:34:16.216 D/TelephonyManager( 4620): getCellLocation - caller PID:4620, UID: 10094, TID: 31444
+12-09 20:34:16.219 D/SST-SEM ( 2186): [0] requestCellIdentity - UID: 1001, PID: 2186
+12-09 20:34:16.219 D/SST-SEM ( 2186): [0] requestAllCellInfo - UID: 1001, PID: 2186
+12-09 20:34:16.219 D/SST     ( 2186): [0] SST.requestAllCellInfo(): return last, back to back calls
+12-09 20:34:16.219 D/TelephonyManager( 4620): getCellLocation returning null because CellLocation is empty or phone type doesn't match CellLocation type
+12-09 20:34:16.795 D/SubscriptionController( 2186): getSimStateForSlotIndex:  simState=LOADED ordinal=10 slotIndex=0
+12-09 20:34:16.798 D/SubscriptionController( 2186): getSimStateForSlotIndex:  simState=LOADED ordinal=10 slotIndex=0
+12-09 20:34:16.812 D/SubscriptionController( 2186): [getSubId]- numSubIds == 0, return null slotIndex=1
+12-09 20:34:16.812 D/SubscriptionController( 2186): getSimStateForSlotIndex:  simState=ABSENT ordinal=1 slotIndex=1
+12-09 20:34:16.813 D/SubscriptionController( 2186): getSimStateForSlotIndex:  simState=ABSENT ordinal=1 slotIndex=1
+12-09 20:34:17.836 D/SubscriptionController( 2186): getSimStateForSlotIndex:  simState=LOADED ordinal=10 slotIndex=0
+12-09 20:34:17.840 D/SubscriptionController( 2186): getSimStateForSlotIndex:  simState=LOADED ordinal=10 slotIndex=0
+12-09 20:34:17.853 D/SubscriptionController( 2186): [getSubId]- numSubIds == 0, return null slotIndex=1
+12-09 20:34:17.854 D/SubscriptionController( 2186): getSimStateForSlotIndex:  simState=ABSENT ordinal=1 slotIndex=1
+12-09 20:34:17.855 D/SubscriptionController( 2186): getSimStateForSlotIndex:  simState=ABSENT ordinal=1 slotIndex=1
+12-09 20:34:18.091 D/SubscriptionController( 2186): getSimStateForSlotIndex:  simState=LOADED ordinal=10 slotIndex=0
+12-09 20:34:18.101 D/SubscriptionController( 2186): getSimStateForSlotIndex:  simState=LOADED ordinal=10 slotIndex=0
+12-09 20:34:18.111 D/SST-SEM ( 2186): [0] requestAllCellInfo - UID: 1001, PID: 2186
+12-09 20:34:18.113 D/RILJ    ( 2186): [1178]> RIL_REQUEST_GET_CELL_INFO_LIST [PHONE0]
+12-09 20:34:18.113 D/RILJ    ( 2186): [1178]< RIL_REQUEST_GET_CELL_INFO_LIST error 1 [PHONE0]
+12-09 20:34:18.114 D/RilRequest( 2186): [1178]< RIL_REQUEST_GET_CELL_INFO_LIST error: com.android.internal.telephony.CommandException: RADIO_NOT_AVAILABLE ret=[] result={ when=-22d3h32m40s526ms what=43 target=com.android.internal.telephony.SemServiceStateTracker }
+12-09 20:34:18.114 D/SST     ( 2186): [0] EVENT_GET_CELL_INFO_LIST: error ret null, e=com.android.internal.telephony.CommandException: RADIO_NOT_AVAILABLE
+12-09 20:34:18.872 D/SubscriptionController( 2186): getSimStateForSlotIndex:  simState=LOADED ordinal=10 slotIndex=0
+12-09 20:34:18.875 D/SubscriptionController( 2186): getSimStateForSlotIndex:  simState=LOADED ordinal=10 slotIndex=0
+12-09 20:34:18.889 D/SubscriptionController( 2186): [getSubId]- numSubIds == 0, return null slotIndex=1
+12-09 20:34:18.889 D/SubscriptionController( 2186): getSimStateForSlotIndex:  simState=ABSENT ordinal=1 slotIndex=1
+12-09 20:34:18.890 D/SubscriptionController( 2186): getSimStateForSlotIndex:  simState=ABSENT ordinal=1 slotIndex=1
+12-09 20:34:19.909 D/SubscriptionController( 2186): getSimStateForSlotIndex:  simState=LOADED ordinal=10 slotIndex=0
+12-09 20:34:19.912 D/SubscriptionController( 2186): getSimStateForSlotIndex:  simState=LOADED ordinal=10 slotIndex=0
+12-09 20:34:19.931 D/SubscriptionController( 2186): [getSubId]- numSubIds == 0, return null slotIndex=1
+12-09 20:34:19.931 D/SubscriptionController( 2186): getSimStateForSlotIndex:  simState=ABSENT ordinal=1 slotIndex=1
+12-09 20:34:19.933 D/SubscriptionController( 2186): getSimStateForSlotIndex:  simState=ABSENT ordinal=1 slotIndex=1
+12-09 20:34:20.956 D/SubscriptionController( 2186): getSimStateForSlotIndex:  simState=LOADED ordinal=10 slotIndex=0
+12-09 20:34:20.959 D/SubscriptionController( 2186): getSimStateForSlotIndex:  simState=LOADED ordinal=10 slotIndex=0
+12-09 20:34:20.975 D/SubscriptionController( 2186): [getSubId]- numSubIds == 0, return null slotIndex=1
+12-09 20:34:20.976 D/SubscriptionController( 2186): getSimStateForSlotIndex:  simState=ABSENT ordinal=1 slotIndex=1
+12-09 20:34:20.977 D/SubscriptionController( 2186): getSimStateForSlotIndex:  simState=ABSENT ordinal=1 slotIndex=1
+12-09 20:34:21.150 D/SubscriptionController( 2186): getSimStateForSlotIndex:  simState=LOADED ordinal=10 slotIndex=0
+12-09 20:34:21.156 D/SubscriptionController( 2186): getSimStateForSlotIndex:  simState=LOADED ordinal=10 slotIndex=0
+12-09 20:34:21.168 D/SST-SEM ( 2186): [0] requestAllCellInfo - UID: 1001, PID: 2186
+12-09 20:34:21.169 D/RILJ    ( 2186): [1179]> RIL_REQUEST_GET_CELL_INFO_LIST [PHONE0]
+12-09 20:34:21.170 D/RILJ    ( 2186): [1179]< RIL_REQUEST_GET_CELL_INFO_LIST error 1 [PHONE0]
+12-09 20:34:21.170 D/RilRequest( 2186): [1179]< RIL_REQUEST_GET_CELL_INFO_LIST error: com.android.internal.telephony.CommandException: RADIO_NOT_AVAILABLE ret=[] result={ when=-22d3h32m43s583ms what=43 target=com.android.internal.telephony.SemServiceStateTracker }
+12-09 20:34:21.171 D/SST     ( 2186): [0] EVENT_GET_CELL_INFO_LIST: error ret null, e=com.android.internal.telephony.CommandException: RADIO_NOT_AVAILABLE
+12-09 20:34:21.998 D/SubscriptionController( 2186): getSimStateForSlotIndex:  simState=LOADED ordinal=10 slotIndex=0
+12-09 20:34:22.000 D/SubscriptionController( 2186): getSimStateForSlotIndex:  simState=LOADED ordinal=10 slotIndex=0
+12-09 20:34:22.013 D/SubscriptionController( 2186): [getSubId]- numSubIds == 0, return null slotIndex=1
+12-09 20:34:22.013 D/SubscriptionController( 2186): getSimStateForSlotIndex:  simState=ABSENT ordinal=1 slotIndex=1
+12-09 20:34:22.014 D/SubscriptionController( 2186): getSimStateForSlotIndex:  simState=ABSENT ordinal=1 slotIndex=1
+12-09 20:34:23.036 D/SubscriptionController( 2186): getSimStateForSlotIndex:  simState=LOADED ordinal=10 slotIndex=0
+12-09 20:34:23.039 D/SubscriptionController( 2186): getSimStateForSlotIndex:  simState=LOADED ordinal=10 slotIndex=0
+12-09 20:34:23.053 D/SubscriptionController( 2186): [getSubId]- numSubIds == 0, return null slotIndex=1
+12-09 20:34:23.054 D/SubscriptionController( 2186): getSimStateForSlotIndex:  simState=ABSENT ordinal=1 slotIndex=1
+12-09 20:34:23.055 D/SubscriptionController( 2186): getSimStateForSlotIndex:  simState=ABSENT ordinal=1 slotIndex=1
+12-09 20:34:24.074 D/SubscriptionController( 2186): getSimStateForSlotIndex:  simState=LOADED ordinal=10 slotIndex=0
+12-09 20:34:24.077 D/SubscriptionController( 2186): getSimStateForSlotIndex:  simState=LOADED ordinal=10 slotIndex=0
+12-09 20:34:24.093 D/SubscriptionController( 2186): [getSubId]- numSubIds == 0, return null slotIndex=1
+12-09 20:34:24.093 D/SubscriptionController( 2186): getSimStateForSlotIndex:  simState=ABSENT ordinal=1 slotIndex=1
+12-09 20:34:24.094 D/SubscriptionController( 2186): getSimStateForSlotIndex:  simState=ABSENT ordinal=1 slotIndex=1
+12-09 20:34:24.201 D/SubscriptionController( 2186): getSimStateForSlotIndex:  simState=LOADED ordinal=10 slotIndex=0
+12-09 20:34:24.210 D/SubscriptionController( 2186): getSimStateForSlotIndex:  simState=LOADED ordinal=10 slotIndex=0
+12-09 20:34:24.225 D/SST-SEM ( 2186): [0] requestAllCellInfo - UID: 1001, PID: 2186
+12-09 20:34:24.226 D/RILJ    ( 2186): [1180]> RIL_REQUEST_GET_CELL_INFO_LIST [PHONE0]
+12-09 20:34:24.227 D/RILJ    ( 2186): [1180]< RIL_REQUEST_GET_CELL_INFO_LIST error 1 [PHONE0]
+12-09 20:34:24.227 D/RilRequest( 2186): [1180]< RIL_REQUEST_GET_CELL_INFO_LIST error: com.android.internal.telephony.CommandException: RADIO_NOT_AVAILABLE ret=[] result={ when=-22d3h32m46s640ms what=43 target=com.android.internal.telephony.SemServiceStateTracker }
+12-09 20:34:24.227 D/SST     ( 2186): [0] EVENT_GET_CELL_INFO_LIST: error ret null, e=com.android.internal.telephony.CommandException: RADIO_NOT_AVAILABLE
+12-09 20:34:25.115 D/SubscriptionController( 2186): getSimStateForSlotIndex:  simState=LOADED ordinal=10 slotIndex=0
+12-09 20:34:25.118 D/SubscriptionController( 2186): getSimStateForSlotIndex:  simState=LOADED ordinal=10 slotIndex=0
+12-09 20:34:25.132 D/SubscriptionController( 2186): [getSubId]- numSubIds == 0, return null slotIndex=1
+12-09 20:34:25.133 D/SubscriptionController( 2186): getSimStateForSlotIndex:  simState=ABSENT ordinal=1 slotIndex=1
+12-09 20:34:25.134 D/SubscriptionController( 2186): getSimStateForSlotIndex:  simState=ABSENT ordinal=1 slotIndex=1
+12-09 20:34:26.154 D/SubscriptionController( 2186): getSimStateForSlotIndex:  simState=LOADED ordinal=10 slotIndex=0
+12-09 20:34:26.158 D/SubscriptionController( 2186): getSimStateForSlotIndex:  simState=LOADED ordinal=10 slotIndex=0
+12-09 20:34:26.176 D/SubscriptionController( 2186): [getSubId]- numSubIds == 0, return null slotIndex=1
+12-09 20:34:26.176 D/SubscriptionController( 2186): getSimStateForSlotIndex:  simState=ABSENT ordinal=1 slotIndex=1
+12-09 20:34:26.177 D/SubscriptionController( 2186): getSimStateForSlotIndex:  simState=ABSENT ordinal=1 slotIndex=1
+12-09 20:34:26.203 D/TelephonyManager( 4620): getCellLocation - caller PID:4620, UID: 10094, TID: 31444
+12-09 20:34:26.205 D/SST-SEM ( 2186): [0] requestCellIdentity - UID: 1001, PID: 2186
+12-09 20:34:26.206 D/SST-SEM ( 2186): [0] requestAllCellInfo - UID: 1001, PID: 2186
+12-09 20:34:26.206 D/SST     ( 2186): [0] SST.requestAllCellInfo(): return last, back to back calls
+12-09 20:34:26.206 D/TelephonyManager( 4620): getCellLocation returning null because CellLocation is empty or phone type doesn't match CellLocation type
+12-09 20:34:27.197 D/SubscriptionController( 2186): getSimStateForSlotIndex:  simState=LOADED ordinal=10 slotIndex=0
+12-09 20:34:27.200 D/SubscriptionController( 2186): getSimStateForSlotIndex:  simState=LOADED ordinal=10 slotIndex=0
+12-09 20:34:27.211 D/SubscriptionController( 2186): [getSubId]- numSubIds == 0, return null slotIndex=1
+12-09 20:34:27.211 D/SubscriptionController( 2186): getSimStateForSlotIndex:  simState=ABSENT ordinal=1 slotIndex=1
+12-09 20:34:27.212 D/SubscriptionController( 2186): getSimStateForSlotIndex:  simState=ABSENT ordinal=1 slotIndex=1
+12-09 20:34:27.264 D/SubscriptionController( 2186): getSimStateForSlotIndex:  simState=LOADED ordinal=10 slotIndex=0
+12-09 20:34:27.271 D/SubscriptionController( 2186): getSimStateForSlotIndex:  simState=LOADED ordinal=10 slotIndex=0
+12-09 20:34:27.283 D/SST-SEM ( 2186): [0] requestAllCellInfo - UID: 1001, PID: 2186
+12-09 20:34:27.285 D/RILJ    ( 2186): [1181]> RIL_REQUEST_GET_CELL_INFO_LIST [PHONE0]
+12-09 20:34:27.286 D/RILJ    ( 2186): [1181]< RIL_REQUEST_GET_CELL_INFO_LIST error 1 [PHONE0]
+12-09 20:34:27.286 D/RilRequest( 2186): [1181]< RIL_REQUEST_GET_CELL_INFO_LIST error: com.android.internal.telephony.CommandException: RADIO_NOT_AVAILABLE ret=[] result={ when=-22d3h32m49s699ms what=43 target=com.android.internal.telephony.SemServiceStateTracker }
+12-09 20:34:27.286 D/SST     ( 2186): [0] EVENT_GET_CELL_INFO_LIST: error ret null, e=com.android.internal.telephony.CommandException: RADIO_NOT_AVAILABLE
+12-09 20:34:28.234 D/SubscriptionController( 2186): getSimStateForSlotIndex:  simState=LOADED ordinal=10 slotIndex=0
+12-09 20:34:28.237 D/SubscriptionController( 2186): getSimStateForSlotIndex:  simState=LOADED ordinal=10 slotIndex=0
+12-09 20:34:28.249 D/SubscriptionController( 2186): [getSubId]- numSubIds == 0, return null slotIndex=1
+12-09 20:34:28.249 D/SubscriptionController( 2186): getSimStateForSlotIndex:  simState=ABSENT ordinal=1 slotIndex=1
+12-09 20:34:28.250 D/SubscriptionController( 2186): getSimStateForSlotIndex:  simState=ABSENT ordinal=1 slotIndex=1
+12-09 20:34:29.151 D/LocaleTracker-0( 2186): Operator numeric changes to ""
+12-09 20:34:29.152 D/LocaleTracker-0( 2186): updateLocale: countryIso = , countryIsoDebugInfo = CellInfo: MccTable.countryCodeForMcc("101")
+12-09 20:34:29.152 D/LocaleTracker-0( 2186): updateLocale: timeZoneCountryIso = , timeZoneCountryIsoDebugInfo = CellInfo: MccTable.geoCountryCodeForMccMnc(MccMnc{mcc='101', mnc='01'})
+12-09 20:34:29.152 D/NewNitzStateMachineImpl-0( 2186): handleCountryUnavailable: mLatestNitzSignal=null
+12-09 20:34:29.152 D/NewNitzStateMachineImpl-0( 2186): doTimeZoneDetection: countryIsoCode=null, nitzSignal=null, suggestion=TelephonyTimeZoneSuggestion{mSlotIndex=0, mZoneId='null', mMatchType=0, mQuality=0, mDebugInfo=[getTimeZoneSuggestion: nitzSignal=null, countryIsoCode=null, Detection reason=handleCountryUnavailable()]}, reason=handleCountryUnavailable()
+12-09 20:34:29.274 D/SubscriptionController( 2186): getSimStateForSlotIndex:  simState=LOADED ordinal=10 slotIndex=0
+12-09 20:34:29.276 D/SubscriptionController( 2186): getSimStateForSlotIndex:  simState=LOADED ordinal=10 slotIndex=0
+12-09 20:34:29.288 D/SubscriptionController( 2186): [getSubId]- numSubIds == 0, return null slotIndex=1
+12-09 20:34:29.289 D/SubscriptionController( 2186): getSimStateForSlotIndex:  simState=ABSENT ordinal=1 slotIndex=1
+12-09 20:34:29.290 D/SubscriptionController( 2186): getSimStateForSlotIndex:  simState=ABSENT ordinal=1 slotIndex=1
+12-09 20:34:30.315 D/SubscriptionController( 2186): getSimStateForSlotIndex:  simState=LOADED ordinal=10 slotIndex=0
+12-09 20:34:30.319 D/SubscriptionController( 2186): getSimStateForSlotIndex:  simState=LOADED ordinal=10 slotIndex=0
+12-09 20:34:30.319 D/SubscriptionController( 2186): getSimStateForSlotIndex:  simState=LOADED ordinal=10 slotIndex=0
+12-09 20:34:30.327 D/SubscriptionController( 2186): getSimStateForSlotIndex:  simState=LOADED ordinal=10 slotIndex=0
+12-09 20:34:30.330 D/SubscriptionController( 2186): [getSubId]- numSubIds == 0, return null slotIndex=1
+12-09 20:34:30.331 D/SubscriptionController( 2186): getSimStateForSlotIndex:  simState=ABSENT ordinal=1 slotIndex=1
+12-09 20:34:30.332 D/SubscriptionController( 2186): getSimStateForSlotIndex:  simState=ABSENT ordinal=1 slotIndex=1
+12-09 20:34:30.339 D/SST-SEM ( 2186): [0] requestAllCellInfo - UID: 1001, PID: 2186
+12-09 20:34:30.341 D/RILJ    ( 2186): [1182]> RIL_REQUEST_GET_CELL_INFO_LIST [PHONE0]
+12-09 20:34:30.342 D/RILJ    ( 2186): [1182]< RIL_REQUEST_GET_CELL_INFO_LIST error 1 [PHONE0]
+12-09 20:34:30.342 D/RilRequest( 2186): [1182]< RIL_REQUEST_GET_CELL_INFO_LIST error: com.android.internal.telephony.CommandException: RADIO_NOT_AVAILABLE ret=[] result={ when=-22d3h32m52s755ms what=43 target=com.android.internal.telephony.SemServiceStateTracker }
+12-09 20:34:30.342 D/SST     ( 2186): [0] EVENT_GET_CELL_INFO_LIST: error ret null, e=com.android.internal.telephony.CommandException: RADIO_NOT_AVAILABLE
+12-09 20:34:31.353 D/SubscriptionController( 2186): getSimStateForSlotIndex:  simState=LOADED ordinal=10 slotIndex=0
+12-09 20:34:31.357 D/SubscriptionController( 2186): getSimStateForSlotIndex:  simState=LOADED ordinal=10 slotIndex=0
+12-09 20:34:31.368 D/SubscriptionController( 2186): [getSubId]- numSubIds == 0, return null slotIndex=1
+12-09 20:34:31.369 D/SubscriptionController( 2186): getSimStateForSlotIndex:  simState=ABSENT ordinal=1 slotIndex=1
+12-09 20:34:31.370 D/SubscriptionController( 2186): getSimStateForSlotIndex:  simState=ABSENT ordinal=1 slotIndex=1
+12-09 20:34:32.393 D/SubscriptionController( 2186): getSimStateForSlotIndex:  simState=LOADED ordinal=10 slotIndex=0
+12-09 20:34:32.397 D/SubscriptionController( 2186): getSimStateForSlotIndex:  simState=LOADED ordinal=10 slotIndex=0
+12-09 20:34:32.414 D/SubscriptionController( 2186): [getSubId]- numSubIds == 0, return null slotIndex=1
+12-09 20:34:32.414 D/SubscriptionController( 2186): getSimStateForSlotIndex:  simState=ABSENT ordinal=1 slotIndex=1
+12-09 20:34:32.415 D/SubscriptionController( 2186): getSimStateForSlotIndex:  simState=ABSENT ordinal=1 slotIndex=1
+12-09 20:34:33.376 D/SubscriptionController( 2186): getSimStateForSlotIndex:  simState=LOADED ordinal=10 slotIndex=0
+12-09 20:34:33.388 D/SubscriptionController( 2186): getSimStateForSlotIndex:  simState=LOADED ordinal=10 slotIndex=0
+12-09 20:34:33.399 D/SST-SEM ( 2186): [0] requestAllCellInfo - UID: 1001, PID: 2186
+12-09 20:34:33.402 D/RILJ    ( 2186): [1183]> RIL_REQUEST_GET_CELL_INFO_LIST [PHONE0]
+12-09 20:34:33.403 D/RILJ    ( 2186): [1183]< RIL_REQUEST_GET_CELL_INFO_LIST error 1 [PHONE0]
+12-09 20:34:33.403 D/RilRequest( 2186): [1183]< RIL_REQUEST_GET_CELL_INFO_LIST error: com.android.internal.telephony.CommandException: RADIO_NOT_AVAILABLE ret=[] result={ when=-22d3h32m55s815ms what=43 target=com.android.internal.telephony.SemServiceStateTracker }
+12-09 20:34:33.404 D/SST     ( 2186): [0] EVENT_GET_CELL_INFO_LIST: error ret null, e=com.android.internal.telephony.CommandException: RADIO_NOT_AVAILABLE
+12-09 20:34:33.435 D/SubscriptionController( 2186): getSimStateForSlotIndex:  simState=LOADED ordinal=10 slotIndex=0
+12-09 20:34:33.438 D/SubscriptionController( 2186): getSimStateForSlotIndex:  simState=LOADED ordinal=10 slotIndex=0
+12-09 20:34:33.449 D/SubscriptionController( 2186): [getSubId]- numSubIds == 0, return null slotIndex=1
+12-09 20:34:33.449 D/SubscriptionController( 2186): getSimStateForSlotIndex:  simState=ABSENT ordinal=1 slotIndex=1
+12-09 20:34:33.450 D/SubscriptionController( 2186): getSimStateForSlotIndex:  simState=ABSENT ordinal=1 slotIndex=1
+12-09 20:34:34.470 D/SubscriptionController( 2186): getSimStateForSlotIndex:  simState=LOADED ordinal=10 slotIndex=0
+12-09 20:34:34.474 D/SubscriptionController( 2186): getSimStateForSlotIndex:  simState=LOADED ordinal=10 slotIndex=0
+12-09 20:34:34.490 D/SubscriptionController( 2186): [getSubId]- numSubIds == 0, return null slotIndex=1
+12-09 20:34:34.490 D/SubscriptionController( 2186): getSimStateForSlotIndex:  simState=ABSENT ordinal=1 slotIndex=1
+12-09 20:34:34.491 D/SubscriptionController( 2186): getSimStateForSlotIndex:  simState=ABSENT ordinal=1 slotIndex=1
+12-09 20:34:35.513 D/SubscriptionController( 2186): getSimStateForSlotIndex:  simState=LOADED ordinal=10 slotIndex=0
+12-09 20:34:35.516 D/SubscriptionController( 2186): getSimStateForSlotIndex:  simState=LOADED ordinal=10 slotIndex=0
+12-09 20:34:35.548 D/SubscriptionController( 2186): [getSubId]- numSubIds == 0, return null slotIndex=1
+12-09 20:34:35.551 D/SubscriptionController( 2186): getSimStateForSlotIndex:  simState=ABSENT ordinal=1 slotIndex=1
+12-09 20:34:35.553 D/SubscriptionController( 2186): getSimStateForSlotIndex:  simState=ABSENT ordinal=1 slotIndex=1
+12-09 20:34:36.207 D/TelephonyManager( 4620): getCellLocation - caller PID:4620, UID: 10094, TID: 31444
+12-09 20:34:36.209 D/SST-SEM ( 2186): [0] requestCellIdentity - UID: 1001, PID: 2186
+12-09 20:34:36.209 D/SST-SEM ( 2186): [0] requestAllCellInfo - UID: 1001, PID: 2186
+12-09 20:34:36.211 D/RILJ    ( 2186): [1184]> RIL_REQUEST_GET_CELL_INFO_LIST [PHONE0]
+12-09 20:34:36.212 D/RILJ    ( 2186): [1184]< RIL_REQUEST_GET_CELL_INFO_LIST error 1 [PHONE0]
+12-09 20:34:36.212 D/RilRequest( 2186): [1184]< RIL_REQUEST_GET_CELL_INFO_LIST error: com.android.internal.telephony.CommandException: RADIO_NOT_AVAILABLE ret=[] result={ when=-22d3h32m58s624ms what=43 target=com.android.internal.telephony.SemServiceStateTracker }
+12-09 20:34:36.212 D/SST     ( 2186): [0] EVENT_GET_CELL_INFO_LIST: error ret null, e=com.android.internal.telephony.CommandException: RADIO_NOT_AVAILABLE
+12-09 20:34:36.213 D/TelephonyManager( 4620): getCellLocation returning null because CellLocation is empty or phone type doesn't match CellLocation type
+12-09 20:34:36.216 D/TelephonyManager( 4620): getCellLocation - caller PID:4620, UID: 10094, TID: 31444
+12-09 20:34:36.217 D/SST-SEM ( 2186): [0] requestCellIdentity - UID: 1001, PID: 2186
+12-09 20:34:36.217 D/SST-SEM ( 2186): [0] requestAllCellInfo - UID: 1001, PID: 2186
+12-09 20:34:36.217 D/SST     ( 2186): [0] SST.requestAllCellInfo(): return last, back to back calls
+12-09 20:34:36.218 D/TelephonyManager( 4620): getCellLocation returning null because CellLocation is empty or phone type doesn't match CellLocation type
+12-09 20:34:36.443 D/SubscriptionController( 2186): getSimStateForSlotIndex:  simState=LOADED ordinal=10 slotIndex=0
+12-09 20:34:36.449 D/SubscriptionController( 2186): getSimStateForSlotIndex:  simState=LOADED ordinal=10 slotIndex=0
+12-09 20:34:36.461 D/SST-SEM ( 2186): [0] requestAllCellInfo - UID: 1001, PID: 2186
+12-09 20:34:36.461 D/SST     ( 2186): [0] SST.requestAllCellInfo(): return last, back to back calls
+12-09 20:34:36.572 D/SubscriptionController( 2186): getSimStateForSlotIndex:  simState=LOADED ordinal=10 slotIndex=0
+12-09 20:34:36.575 D/SubscriptionController( 2186): getSimStateForSlotIndex:  simState=LOADED ordinal=10 slotIndex=0
+12-09 20:34:36.590 D/SubscriptionController( 2186): [getSubId]- numSubIds == 0, return null slotIndex=1
+12-09 20:34:36.590 D/SubscriptionController( 2186): getSimStateForSlotIndex:  simState=ABSENT ordinal=1 slotIndex=1
+12-09 20:34:36.592 D/SubscriptionController( 2186): getSimStateForSlotIndex:  simState=ABSENT ordinal=1 slotIndex=1
+12-09 20:34:37.615 D/SubscriptionController( 2186): getSimStateForSlotIndex:  simState=LOADED ordinal=10 slotIndex=0
+12-09 20:34:37.617 D/SubscriptionController( 2186): getSimStateForSlotIndex:  simState=LOADED ordinal=10 slotIndex=0
+12-09 20:34:37.638 D/SubscriptionController( 2186): [getSubId]- numSubIds == 0, return null slotIndex=1
+12-09 20:34:37.639 D/SubscriptionController( 2186): getSimStateForSlotIndex:  simState=ABSENT ordinal=1 slotIndex=1
+12-09 20:34:37.641 D/SubscriptionController( 2186): getSimStateForSlotIndex:  simState=ABSENT ordinal=1 slotIndex=1
+12-09 20:34:38.662 D/SubscriptionController( 2186): getSimStateForSlotIndex:  simState=LOADED ordinal=10 slotIndex=0
+12-09 20:34:38.665 D/SubscriptionController( 2186): getSimStateForSlotIndex:  simState=LOADED ordinal=10 slotIndex=0
+12-09 20:34:38.680 D/SubscriptionController( 2186): [getSubId]- numSubIds == 0, return null slotIndex=1
+12-09 20:34:38.681 D/SubscriptionController( 2186): getSimStateForSlotIndex:  simState=ABSENT ordinal=1 slotIndex=1
+12-09 20:34:38.682 D/SubscriptionController( 2186): getSimStateForSlotIndex:  simState=ABSENT ordinal=1 slotIndex=1
+12-09 20:34:39.496 D/SubscriptionController( 2186): getSimStateForSlotIndex:  simState=LOADED ordinal=10 slotIndex=0
+12-09 20:34:39.502 D/SubscriptionController( 2186): getSimStateForSlotIndex:  simState=LOADED ordinal=10 slotIndex=0
+12-09 20:34:39.514 D/SST-SEM ( 2186): [0] requestAllCellInfo - UID: 1001, PID: 2186
+12-09 20:34:39.515 D/RILJ    ( 2186): [1185]> RIL_REQUEST_GET_CELL_INFO_LIST [PHONE0]
+12-09 20:34:39.516 D/RILJ    ( 2186): [1185]< RIL_REQUEST_GET_CELL_INFO_LIST error 1 [PHONE0]
+12-09 20:34:39.516 D/RilRequest( 2186): [1185]< RIL_REQUEST_GET_CELL_INFO_LIST error: com.android.internal.telephony.CommandException: RADIO_NOT_AVAILABLE ret=[] result={ when=-22d3h33m1s929ms what=43 target=com.android.internal.telephony.SemServiceStateTracker }
+12-09 20:34:39.517 D/SST     ( 2186): [0] EVENT_GET_CELL_INFO_LIST: error ret null, e=com.android.internal.telephony.CommandException: RADIO_NOT_AVAILABLE
+12-09 20:34:39.706 D/SubscriptionController( 2186): getSimStateForSlotIndex:  simState=LOADED ordinal=10 slotIndex=0
+12-09 20:34:39.709 D/SubscriptionController( 2186): getSimStateForSlotIndex:  simState=LOADED ordinal=10 slotIndex=0
+12-09 20:34:39.725 D/SubscriptionController( 2186): [getSubId]- numSubIds == 0, return null slotIndex=1
+12-09 20:34:39.726 D/SubscriptionController( 2186): getSimStateForSlotIndex:  simState=ABSENT ordinal=1 slotIndex=1
+12-09 20:34:39.727 D/SubscriptionController( 2186): getSimStateForSlotIndex:  simState=ABSENT ordinal=1 slotIndex=1
+12-09 20:34:40.747 D/SubscriptionController( 2186): getSimStateForSlotIndex:  simState=LOADED ordinal=10 slotIndex=0
+12-09 20:34:40.749 D/SubscriptionController( 2186): getSimStateForSlotIndex:  simState=LOADED ordinal=10 slotIndex=0
+12-09 20:34:40.761 D/SubscriptionController( 2186): [getSubId]- numSubIds == 0, return null slotIndex=1
+12-09 20:34:40.761 D/SubscriptionController( 2186): getSimStateForSlotIndex:  simState=ABSENT ordinal=1 slotIndex=1
+12-09 20:34:40.762 D/SubscriptionController( 2186): getSimStateForSlotIndex:  simState=ABSENT ordinal=1 slotIndex=1
+12-09 20:34:41.781 D/SubscriptionController( 2186): getSimStateForSlotIndex:  simState=LOADED ordinal=10 slotIndex=0
+12-09 20:34:41.785 D/SubscriptionController( 2186): getSimStateForSlotIndex:  simState=LOADED ordinal=10 slotIndex=0
+12-09 20:34:41.798 D/SubscriptionController( 2186): [getSubId]- numSubIds == 0, return null slotIndex=1
+12-09 20:34:41.799 D/SubscriptionController( 2186): getSimStateForSlotIndex:  simState=ABSENT ordinal=1 slotIndex=1
+12-09 20:34:41.800 D/SubscriptionController( 2186): getSimStateForSlotIndex:  simState=ABSENT ordinal=1 slotIndex=1
+12-09 20:34:42.571 D/SubscriptionController( 2186): getSimStateForSlotIndex:  simState=LOADED ordinal=10 slotIndex=0
+12-09 20:34:42.581 D/SubscriptionController( 2186): getSimStateForSlotIndex:  simState=LOADED ordinal=10 slotIndex=0
+12-09 20:34:42.593 D/SST-SEM ( 2186): [0] requestAllCellInfo - UID: 1001, PID: 2186
+12-09 20:34:42.594 D/RILJ    ( 2186): [1186]> RIL_REQUEST_GET_CELL_INFO_LIST [PHONE0]
+12-09 20:34:42.595 D/RILJ    ( 2186): [1186]< RIL_REQUEST_GET_CELL_INFO_LIST error 1 [PHONE0]
+12-09 20:34:42.595 D/RilRequest( 2186): [1186]< RIL_REQUEST_GET_CELL_INFO_LIST error: com.android.internal.telephony.CommandException: RADIO_NOT_AVAILABLE ret=[] result={ when=-22d3h33m5s8ms what=43 target=com.android.internal.telephony.SemServiceStateTracker }
+12-09 20:34:42.595 D/SST     ( 2186): [0] EVENT_GET_CELL_INFO_LIST: error ret null, e=com.android.internal.telephony.CommandException: RADIO_NOT_AVAILABLE
+12-09 20:34:42.819 D/SubscriptionController( 2186): getSimStateForSlotIndex:  simState=LOADED ordinal=10 slotIndex=0
+12-09 20:34:42.822 D/SubscriptionController( 2186): getSimStateForSlotIndex:  simState=LOADED ordinal=10 slotIndex=0
+12-09 20:34:42.844 D/SubscriptionController( 2186): [getSubId]- numSubIds == 0, return null slotIndex=1
+12-09 20:34:42.844 D/SubscriptionController( 2186): getSimStateForSlotIndex:  simState=ABSENT ordinal=1 slotIndex=1
+12-09 20:34:42.845 D/SubscriptionController( 2186): getSimStateForSlotIndex:  simState=ABSENT ordinal=1 slotIndex=1
+12-09 20:34:43.867 D/SubscriptionController( 2186): getSimStateForSlotIndex:  simState=LOADED ordinal=10 slotIndex=0
+12-09 20:34:43.870 D/SubscriptionController( 2186): getSimStateForSlotIndex:  simState=LOADED ordinal=10 slotIndex=0
+12-09 20:34:43.884 D/SubscriptionController( 2186): [getSubId]- numSubIds == 0, return null slotIndex=1
+12-09 20:34:43.885 D/SubscriptionController( 2186): getSimStateForSlotIndex:  simState=ABSENT ordinal=1 slotIndex=1
+12-09 20:34:43.886 D/SubscriptionController( 2186): getSimStateForSlotIndex:  simState=ABSENT ordinal=1 slotIndex=1
+12-09 20:34:44.908 D/SubscriptionController( 2186): getSimStateForSlotIndex:  simState=LOADED ordinal=10 slotIndex=0
+12-09 20:34:44.911 D/SubscriptionController( 2186): getSimStateForSlotIndex:  simState=LOADED ordinal=10 slotIndex=0
+12-09 20:34:44.927 D/SubscriptionController( 2186): [getSubId]- numSubIds == 0, return null slotIndex=1
+12-09 20:34:44.928 D/SubscriptionController( 2186): getSimStateForSlotIndex:  simState=ABSENT ordinal=1 slotIndex=1
+12-09 20:34:44.929 D/SubscriptionController( 2186): getSimStateForSlotIndex:  simState=ABSENT ordinal=1 slotIndex=1
+12-09 20:34:45.625 D/SubscriptionController( 2186): getSimStateForSlotIndex:  simState=LOADED ordinal=10 slotIndex=0
+12-09 20:34:45.656 D/SubscriptionController( 2186): getSimStateForSlotIndex:  simState=LOADED ordinal=10 slotIndex=0
+12-09 20:34:45.669 D/SST-SEM ( 2186): [0] requestAllCellInfo - UID: 1001, PID: 2186
+12-09 20:34:45.672 D/RILJ    ( 2186): [1187]> RIL_REQUEST_GET_CELL_INFO_LIST [PHONE0]
+12-09 20:34:45.673 D/RILJ    ( 2186): [1187]< RIL_REQUEST_GET_CELL_INFO_LIST error 1 [PHONE0]
+12-09 20:34:45.673 D/RilRequest( 2186): [1187]< RIL_REQUEST_GET_CELL_INFO_LIST error: com.android.internal.telephony.CommandException: RADIO_NOT_AVAILABLE ret=[] result={ when=-22d3h33m8s85ms what=43 target=com.android.internal.telephony.SemServiceStateTracker }
+12-09 20:34:45.673 D/SST     ( 2186): [0] EVENT_GET_CELL_INFO_LIST: error ret null, e=com.android.internal.telephony.CommandException: RADIO_NOT_AVAILABLE
+12-09 20:34:45.946 D/SubscriptionController( 2186): getSimStateForSlotIndex:  simState=LOADED ordinal=10 slotIndex=0
+12-09 20:34:45.949 D/SubscriptionController( 2186): getSimStateForSlotIndex:  simState=LOADED ordinal=10 slotIndex=0
+12-09 20:34:45.965 D/SubscriptionController( 2186): [getSubId]- numSubIds == 0, return null slotIndex=1
+12-09 20:34:45.966 D/SubscriptionController( 2186): getSimStateForSlotIndex:  simState=ABSENT ordinal=1 slotIndex=1
+12-09 20:34:45.971 D/SubscriptionController( 2186): getSimStateForSlotIndex:  simState=ABSENT ordinal=1 slotIndex=1
+12-09 20:34:46.208 D/TelephonyManager( 4620): getCellLocation - caller PID:4620, UID: 10094, TID: 31444
+12-09 20:34:46.211 D/SST-SEM ( 2186): [0] requestCellIdentity - UID: 1001, PID: 2186
+12-09 20:34:46.211 D/SST-SEM ( 2186): [0] requestAllCellInfo - UID: 1001, PID: 2186
+12-09 20:34:46.211 D/SST     ( 2186): [0] SST.requestAllCellInfo(): return last, back to back calls
+12-09 20:34:46.211 D/TelephonyManager( 4620): getCellLocation returning null because CellLocation is empty or phone type doesn't match CellLocation type
+12-09 20:34:46.215 D/TelephonyManager( 4620): getCellLocation - caller PID:4620, UID: 10094, TID: 31444
+12-09 20:34:46.218 D/SST-SEM ( 2186): [0] requestCellIdentity - UID: 1001, PID: 2186
+12-09 20:34:46.218 D/SST-SEM ( 2186): [0] requestAllCellInfo - UID: 1001, PID: 2186
+12-09 20:34:46.218 D/SST     ( 2186): [0] SST.requestAllCellInfo(): return last, back to back calls
+12-09 20:34:46.219 D/TelephonyManager( 4620): getCellLocation returning null because CellLocation is empty or phone type doesn't match CellLocation type
+12-09 20:34:47.001 D/SubscriptionController( 2186): getSimStateForSlotIndex:  simState=LOADED ordinal=10 slotIndex=0
+12-09 20:34:47.005 D/SubscriptionController( 2186): getSimStateForSlotIndex:  simState=LOADED ordinal=10 slotIndex=0
+12-09 20:34:47.020 D/SubscriptionController( 2186): [getSubId]- numSubIds == 0, return null slotIndex=1
+12-09 20:34:47.020 D/SubscriptionController( 2186): getSimStateForSlotIndex:  simState=ABSENT ordinal=1 slotIndex=1
+12-09 20:34:47.021 D/SubscriptionController( 2186): getSimStateForSlotIndex:  simState=ABSENT ordinal=1 slotIndex=1
+12-09 20:34:48.047 D/SubscriptionController( 2186): getSimStateForSlotIndex:  simState=LOADED ordinal=10 slotIndex=0
+12-09 20:34:48.051 D/SubscriptionController( 2186): getSimStateForSlotIndex:  simState=LOADED ordinal=10 slotIndex=0
+12-09 20:34:48.066 D/SubscriptionController( 2186): [getSubId]- numSubIds == 0, return null slotIndex=1
+12-09 20:34:48.066 D/SubscriptionController( 2186): getSimStateForSlotIndex:  simState=ABSENT ordinal=1 slotIndex=1
+12-09 20:34:48.068 D/SubscriptionController( 2186): getSimStateForSlotIndex:  simState=ABSENT ordinal=1 slotIndex=1
+12-09 20:34:48.703 D/SubscriptionController( 2186): getSimStateForSlotIndex:  simState=LOADED ordinal=10 slotIndex=0
+12-09 20:34:48.710 D/SubscriptionController( 2186): getSimStateForSlotIndex:  simState=LOADED ordinal=10 slotIndex=0
+12-09 20:34:48.721 D/SST-SEM ( 2186): [0] requestAllCellInfo - UID: 1001, PID: 2186
+12-09 20:34:48.723 D/RILJ    ( 2186): [1188]> RIL_REQUEST_GET_CELL_INFO_LIST [PHONE0]
+12-09 20:34:48.724 D/RILJ    ( 2186): [1188]< RIL_REQUEST_GET_CELL_INFO_LIST error 1 [PHONE0]
+12-09 20:34:48.724 D/RilRequest( 2186): [1188]< RIL_REQUEST_GET_CELL_INFO_LIST error: com.android.internal.telephony.CommandException: RADIO_NOT_AVAILABLE ret=[] result={ when=-22d3h33m11s137ms what=43 target=com.android.internal.telephony.SemServiceStateTracker }
+12-09 20:34:48.724 D/SST     ( 2186): [0] EVENT_GET_CELL_INFO_LIST: error ret null, e=com.android.internal.telephony.CommandException: RADIO_NOT_AVAILABLE
+12-09 20:34:49.089 D/SubscriptionController( 2186): getSimStateForSlotIndex:  simState=LOADED ordinal=10 slotIndex=0
+12-09 20:34:49.092 D/SubscriptionController( 2186): getSimStateForSlotIndex:  simState=LOADED ordinal=10 slotIndex=0
+12-09 20:34:49.108 D/SubscriptionController( 2186): [getSubId]- numSubIds == 0, return null slotIndex=1
+12-09 20:34:49.108 D/SubscriptionController( 2186): getSimStateForSlotIndex:  simState=ABSENT ordinal=1 slotIndex=1
+12-09 20:34:49.110 D/SubscriptionController( 2186): getSimStateForSlotIndex:  simState=ABSENT ordinal=1 slotIndex=1
+12-09 20:34:50.130 D/SubscriptionController( 2186): getSimStateForSlotIndex:  simState=LOADED ordinal=10 slotIndex=0
+12-09 20:34:50.132 D/SubscriptionController( 2186): getSimStateForSlotIndex:  simState=LOADED ordinal=10 slotIndex=0
+12-09 20:34:50.142 D/SubscriptionController( 2186): [getSubId]- numSubIds == 0, return null slotIndex=1
+12-09 20:34:50.143 D/SubscriptionController( 2186): getSimStateForSlotIndex:  simState=ABSENT ordinal=1 slotIndex=1
+12-09 20:34:50.144 D/SubscriptionController( 2186): getSimStateForSlotIndex:  simState=ABSENT ordinal=1 slotIndex=1
+12-09 20:34:50.830 D/SubscriptionController( 2186): getSimStateForSlotIndex:  simState=LOADED ordinal=10 slotIndex=0
+12-09 20:34:50.908 D/SubscriptionController( 2186): getSimStateForSlotIndex:  simState=LOADED ordinal=10 slotIndex=0
+12-09 20:34:50.976 D/SubscriptionController( 2186): getSimStateForSlotIndex:  simState=LOADED ordinal=10 slotIndex=0
+12-09 20:34:51.013 D/ARGOS   ( 3398): argos: argos_monitor: Mbps:1 prev_tput:0
+12-09 20:34:51.162 D/SubscriptionController( 2186): getSimStateForSlotIndex:  simState=LOADED ordinal=10 slotIndex=0
+12-09 20:34:51.164 D/SubscriptionController( 2186): getSimStateF
