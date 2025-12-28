@@ -1,0 +1,16 @@
+testId: tw-baseline-liteon
+testType: TIMING_WINDOWS  
+description: "Baseline timing - LiteON"
+
+target:
+  oduUrn: "urn:o-ran:gnb:liteon-joule"
+  cellUrn: "urn:o-ran:cell:liteon-cell-1"  # Add this
+
+parameters:
+  T1a_cp_dl:
+    min: 285
+    max: 429
+
+execution:
+  runsPerCase: 2
+  stabilizationTime: 30
