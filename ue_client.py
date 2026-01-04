@@ -17,12 +17,13 @@ class UEClient:
         if self.client is None:
             self.client = paramiko.SSHClient()
             self.client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-            self.client.connect(self.host, username=self.user, password=self.password, timeout=10)
+            self.client.connect(self.host, username=self.user, password=self.password, timeout=10, port=24)
 
     def _run_adb(self, cmd, timeout=10):
         try:
             self._connect()
-            stdin, stdout, stderr = self.client.exec_command(f'adb shell {cmd}', timeout=timeout)
+            # Multiple Device ID of Samsung is R5CN30TMBYR
+            stdin, stdout, stderr = self.client.exec_command(f'adb -s R5CN30TMBYR shell {cmd}', timeout=timeout)
             output = stdout.read().decode('utf-8').strip()
             returncode = stdout.channel.recv_exit_status()
             return output, returncode
