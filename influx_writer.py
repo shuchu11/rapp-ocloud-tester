@@ -2,14 +2,15 @@ from datetime import datetime
 
 from influxdb_client import InfluxDBClient, Point, WritePrecision
 from influxdb_client.client.write_api import SYNCHRONOUS
+import os
 
 
 class InfluxWriter:
     def __init__(self):
-        self.url = "http://192.168.8.69:30138"
-        self.token = "OXBQioD0laQNV9ouB3wxA8MGnhgzR8qbtaWC73ONPZBZdZ1Yn3y94IOOD8ka53LsDxl9rXxrO99COhH1xB5sUg=="  # Paste token here
-        self.org = "23d50abdce61b0f6"
-        self.bucket = "cicd-test-results"
+        self.url = os.getenv("INFLUXDB_URL","http://192.168.8.69:30138")
+        self.token = os.getenv("INFLUX_TOKEN", "")
+        self.org = os.getenv("INFLUX_ORG", "")
+        self.bucket = os.getenv("INFLUX_BUCKET", "")
 
         self.client = InfluxDBClient(url=self.url, token=self.token, org=self.org)
         self.write_api = self.client.write_api(write_options=SYNCHRONOUS)
@@ -151,27 +152,54 @@ class InfluxWriter:
 
         self.write_api.write(bucket=self.bucket, org=self.org, record=point)
 
-        def write_test_execution(self, test_id, execution_id, oru_vendor, results):
-            """Write main test execution results"""
-            timestamp = datetime.utcnow()
+    def write_thread_cpu_sample(
+        self,
+        test_id,
+        execution_id,
+        run_id,
+        oru_vendor,
+        thread_name,
+        cpu_percent,
+        core=None,
+    ):
+        """Write individual thread CPU sample"""
+        point = (
+            Point("thread_cpu")
+            .tag("test_id", test_id)
+            .tag("execution_id", str(execution_id))
+            .tag("run_id", str(run_id))
+            .tag("oru_vendor", oru_vendor)
+            .tag("thread_name", thread_name)
+        )
 
-            point = (
-                Point("test_execution")
-                .tag("test_id", test_id)
-                .tag("oru_vendor", oru_vendor)
-                .tag("execution_id", str(execution_id))
-                .field("successful_runs", results.get("successful_runs", 0))
-                .field("avg_throughput_mbps", results.get("avg_throughput_mbps", 0.0))
-                .field("avg_jitter_ms", results.get("avg_jitter_ms", 0.0))
-                .field("avg_loss_percent", results.get("avg_loss_percent", 0.0))
-                .field("avg_rsrp_dbm", results.get("avg_rsrp_dbm", 0.0))
-                .field("avg_rsrq_db", results.get("avg_rsrq_db", 0.0))
-                .field("avg_sinr_db", results.get("avg_sinr_db", 0.0))
-                .time(timestamp, WritePrecision.NS)
-            )
+        if core:
+            point = point.tag("core", str(core))
 
-            self.write_api.write(bucket=self.bucket, org=self.org, record=point)
-            print(f"[INFLUX] Wrote test_execution: {test_id}/{execution_id}")
+        point = point.field("cpu_percent", float(cpu_percent))
+
+        self.write_api.write(bucket=self.bucket, org=self.org, record=point)
+
+    def write_test_execution(self, test_id, execution_id, oru_vendor, results):
+        """Write main test execution results"""
+        timestamp = datetime.utcnow()
+
+        point = (
+            Point("test_execution")
+            .tag("test_id", test_id)
+            .tag("oru_vendor", oru_vendor)
+            .tag("execution_id", str(execution_id))
+            .field("successful_runs", results.get("successful_runs", 0))
+            .field("avg_throughput_mbps", results.get("avg_throughput_mbps", 0.0))
+            .field("avg_jitter_ms", results.get("avg_jitter_ms", 0.0))
+            .field("avg_loss_percent", results.get("avg_loss_percent", 0.0))
+            .field("avg_rsrp_dbm", results.get("avg_rsrp_dbm", 0.0))
+            .field("avg_rsrq_db", results.get("avg_rsrq_db", 0.0))
+            .field("avg_sinr_db", results.get("avg_sinr_db", 0.0))
+            .time(timestamp, WritePrecision.NS)
+        )
+
+        self.write_api.write(bucket=self.bucket, org=self.org, record=point)
+        print(f"[INFLUX] Wrote test_execution: {test_id}/{execution_id}")
 
     def write_cpu_monitor(self, test_id, execution_id, run_id, cpu_data):
         """Write CPU core monitoring time-series data"""

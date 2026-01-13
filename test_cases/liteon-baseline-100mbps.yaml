@@ -1,0 +1,13 @@
+testId: liteon-baseline-100mbps
+testType: BANDWIDTH_SCALING
+description: "Bandwidth baseline test with 100Mbps iperf load - LiteON O-RU - Max CPU"
+target:
+    oduUrn: urn:o-ran:gnb:joule-liteon
+    cellUrn: urn:o-ran:cell:joule-liteon
+    sideloadInstanceId: 139d2f51-b3c2-4a94-a6a3-401464537f23
+execution:
+    runsPerCase: 3
+    stabilizationTime: 30
+parameters:
+    wr_isolcpus: [10, 14]
+    iperf_bandwidth_mbps: [5, 10]

@@ -7,10 +7,10 @@ import json
 import time
 
 class UEClient:
-    def __init__(self, host="140.118.162.81", user="sshuser", password=None):
-        self.host = host
-        self.user = user
-        self.password = password or os.getenv('UE_SSH_PASSWORD')
+    def __init__(self, host=None, user=None, password=None):
+        self.host = os.getenv("ADB_MACHINE_SSH_HOST","")
+        self.user = os.getenv("ADB_MACHINE_SSH_USER","")
+        self.password = os.getenv("ADB_MACHINE_SSH_PASSWORD","")
         self.client = None
 
     def _connect(self):

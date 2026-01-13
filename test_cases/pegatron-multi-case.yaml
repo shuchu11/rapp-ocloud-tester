@@ -1,0 +1,13 @@
+testId: pegatron-multi-case
+testType: BANDWIDTH_SCALING
+description: "Bandwidth baseline test with 100Mbps iperf load - Pegatron O-RU - Max CPU"
+target:
+    oduUrn: urn:o-ran:gnb:joule-pegatron
+    cellUrn: urn:o-ran:cell:joule-pegatron
+    sideloadInstanceId: 139d2f51-b3c2-4a94-a6a3-401464537f23
+execution:
+    runsPerCase: 1
+    stabilizationTime: 30
+parameters:
+    wr_isolcpus: [10, 12, 14]
+    iperf_bandwidth_mbps: [50, 100, 200]

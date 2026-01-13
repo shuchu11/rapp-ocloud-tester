@@ -5,6 +5,7 @@ import threading
 import time
 import uuid
 from datetime import datetime
+from itertools import product
 
 import numpy as np
 import requests
@@ -27,8 +28,9 @@ app = Flask(__name__)
 ue = UEClient()
 sideload = SideloadClient()
 
-NFO_BASE = "http://192.168.8.35:8080/api/o2dms/v2"
-RAPP_URL = "http://192.168.8.35:5000"
+NFO_BASE = os.getenv("NFO_BASE_URL","")
+print(f"[DEBUG] NFO URL {NFO_BASE}")
+RAPP_URL = os.getenv("RAPP_URL","")
 TEST_CASES_DIR = "test_cases"
 
 
@@ -621,6 +623,21 @@ def tests_list():
         {"tests": [{"testId": r[0], "testType": r[1], "targetOdu": r[2]} for r in rows]}
     )
 
+@app.route("/health", methods=["GET"])
+def health():
+    """Health check endpoint for K8s liveness/readiness probes"""
+    try:
+        # Basic sanity checks
+        db_ok = db.check_connection() if hasattr(db, 'check_connection') else True
+        return jsonify({
+            "status": "healthy",
+            "database": "ok" if db_ok else "degraded"
+        }), 200
+    except Exception as e:
+        return jsonify({
+            "status": "unhealthy",
+            "error": str(e)
+        }), 503
 
 @app.route("/tests/run/<test_id>", methods=["POST"])
 def tests_run(test_id):
@@ -643,6 +660,40 @@ def tests_run(test_id):
     if not odu or not cell:
         return jsonify({"error": "Target not found in TEIV"}), 404
 
+    params = test_case.get("parameters", {})
+    param_permutations = generate_permutations(params)
+
+    results = []
+    for param_set in param_permutations:
+        print(f"[DEBUG] Current Param set: {param_set}")
+        result = execute_single_test(test_case, odu, cell, param_set, test_id)
+        results.append(result)
+
+    return jsonify({"status": "OK", "results": results})
+
+
+def generate_permutations(params):
+    """Generate all permutations from parameter arrays"""
+    # Separate scalar and array parameters
+    keys = []
+    value_lists = []
+
+    for key, value in params.items():
+        keys.append(key)
+        if isinstance(value, list):
+            value_lists.append(value)
+        else:
+            value_lists.append([value])  # Wrap scalar in list
+
+    # Generate cartesian product
+    permutations = []
+    for values in product(*value_lists):
+        permutations.append(dict(zip(keys, values)))
+    print(f"[DEBUG] Permutations: {permutations}")
+    return permutations
+
+
+def execute_single_test(test_case, odu, cell, param_set, test_id):
     odu_attrs = odu["attributes"]
     cell_attrs = cell["attributes"]
     print(f"[DEBUG] cell_attrs: {cell_attrs}")
@@ -650,29 +701,33 @@ def tests_run(test_id):
 
     print(f"[DEBUG] cell_attrs: {cell_attrs}")
     print(f"[DEBUG] nRTAC value: {cell_attrs.get('nRTAC')}")
+
+    params = test_case.get("parameters", {})
+
+
+
     helm_values = {
         "config": {
             "mcc": odu["attributes"]["mcc"],
             "mnc": odu["attributes"]["mnc"],
             "tac": cell["attributes"]["nRTAC"],
             "physCellId": cell["attributes"]["nRPCI"],
-        }
+
+        },
+        "resources": {
+            "define": True,
+            "limits": {
+                "nf": test_case['baseline'],
+            },
+            "requests": {
+                "nf": test_case['baseline'],
+            },
+        },
     }
 
-    params = test_case.get("parameters", {})
 
-    if "wr_isolcpus" in params:
-        helm_values.setdefault(
-            "resources", {"define": True, "limits": {"nf": {}}, "requests": {"nf": {}}}
-        )
-        helm_values["resources"]["limits"]["nf"]["wr_isolcpus"] = params["wr_isolcpus"]
-        helm_values["resources"]["requests"]["nf"]["wr_isolcpus"] = params[
-            "wr_isolcpus"
-        ]
-        helm_values["resources"]["limits"]["nf"]["memory"] = "16Gi"
-        helm_values["resources"]["requests"]["nf"]["memory"] = "16Gi"
-        helm_values["resources"]["limits"]["nf"]["hugepages"] = "10Gi"
-        helm_values["resources"]["requests"]["nf"]["hugepages"] = "10Gi"
+    if test_case['extra']:
+        helm_values['config'].update(test_case['extra'])
 
     config = {
         "name": f"test-{test_id}",
@@ -683,7 +738,8 @@ def tests_run(test_id):
         "artifact_repo_branch": teiv.get_helm_branch_for_odu(
             test_case["target"]["oduUrn"]
         ),
-        "target_cluster": "cc1397ba-b1c4-4a3e-bc8d-6af58ef53818",
+        "artifact_repo_branch": test_case['target']['branch'],
+        "target_cluster": test_case["target"]["cluster"],
         "values": helm_values,
     }
 
@@ -736,11 +792,11 @@ def tests_run(test_id):
         }
 
         def fetch_cpu_thread():
-            """Thread CPU affinity profiling"""
+            """Thread CPU monitoring over time"""
             try:
                 print(f"[DEBUG] Thread profiling: Starting...")
                 resp = requests.post(
-                    f"{sideload_url}/perf/thread_cpu_affinity",
+                    f"{sideload_url}/perf/thread_cpu_monitor",  # NEW endpoint
                     json={"duration": MONITOR_DURATION, "pgrep": "softmodem"},
                     timeout=MONITOR_DURATION + 10,
                 )
@@ -861,14 +917,24 @@ def tests_run(test_id):
 
         cpu_thread_data = monitoring_results["cpu_thread"]["data"]
         if cpu_thread_data and cpu_thread_data.get("threads"):
-            total_cpu = sum(t["avg_cpu"] for t in cpu_thread_data["threads"])
-            thread_count = len(cpu_thread_data["threads"])
-            print(f"[DEBUG] Thread CPU: {thread_count} threads, total {total_cpu:.1f}%")
-        elif monitoring_results["cpu_thread"]["error"]:
             print(
-                f"[WARN] Thread CPU error: {monitoring_results['cpu_thread']['error']}"
+                f"[DEBUG] Writing {len(cpu_thread_data['threads'])} thread samples to InfluxDB"
             )
-
+            for thread in cpu_thread_data["threads"]:
+                try:
+                    influx.write_thread_cpu_sample(
+                        test_id=test_id,
+                        execution_id=exec_id,
+                        run_id=run,
+                        oru_vendor=odu_attrs.get("gNBDUName", "unknown"),
+                        thread_name=thread["name"],
+                        cpu_percent=thread["avg_cpu"],
+                        core=thread.get(
+                            "core", "unknown"
+                        ),  # If sideload provides core info
+                    )
+                except Exception as e:
+                    print(f"[WARN] Failed to write thread {thread['name']}: {e}")
         signal = ue_status.get("signal", {})
         if signal is None:
             signal = {}
@@ -979,9 +1045,13 @@ def tests_run(test_id):
 
     terminate_gnb(deployment["instance_id"])
 
-    return jsonify(
-        {"execution_id": exec_id, "test_id": test_id, "results": avg_results}
-    )
+    return {
+        "parameters": param_set,
+        "status": "completed",
+        "execution_id": exec_id,
+        "test_id": test_id,
+        "results": avg_results,
+    }
 
 
 @app.route("/tests/results", methods=["GET"])
@@ -1093,6 +1163,7 @@ def teiv_sync_to_influx():
 
         return jsonify(
             {
+
                 "status": "OK",
                 "entities_synced": len(entities),
                 "odus": len([e for e in entities if e["type"] == "ODUFunction"]),
