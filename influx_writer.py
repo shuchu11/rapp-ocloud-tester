@@ -8,9 +8,9 @@ import os
 class InfluxWriter:
     def __init__(self):
         self.url = os.getenv("INFLUXDB_URL","http://192.168.8.69:30138")
-        self.token = os.getenv("INFLUX_TOKEN", "")
-        self.org = os.getenv("INFLUX_ORG", "")
-        self.bucket = os.getenv("INFLUX_BUCKET", "")
+        self.token = os.getenv("INFLUXDB_TOKEN", "")
+        self.org = os.getenv("INFLUXDB_ORG", "")
+        self.bucket = os.getenv("INFLUXDB_BUCKET", "")
 
         self.client = InfluxDBClient(url=self.url, token=self.token, org=self.org)
         self.write_api = self.client.write_api(write_options=SYNCHRONOUS)

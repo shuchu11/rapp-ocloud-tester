@@ -1,0 +1,24 @@
+testId: jura-joule-cpu-bandwidth
+testType: BANDWIDTH_SCALING
+description: "Bandwidth baseline test with 100Mbps iperf load - Pegatron O-RU - Max CPU"
+target:
+    oduUrn: urn:o-ran:gnb:joule-pegatron
+    cellUrn: urn:o-ran:cell:joule-pegatron
+    sideloadInstanceId: 139d2f51-b3c2-4a94-a6a3-401464537f23
+    cluster: cc1397ba-b1c4-4a3e-bc8d-6af58ef53818
+    branch: starlingx/jura
+    artifactRepoUrl: https://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@github.com/motangpuar/ocloud-helm-templates.git
+    artifactName: oai-gnb-fhi-72
+execution:
+    runsPerCase: 1
+    stabilizationTime: 30
+parameters:
+    cpus: [14]
+    iperf_bandwidth_mbps: [300]
+baseline:
+  cpus: 10
+  memory: 16Gi
+  hugepages: 10Gi
+extra:
+  amfhost: 192.168.8.82
+
