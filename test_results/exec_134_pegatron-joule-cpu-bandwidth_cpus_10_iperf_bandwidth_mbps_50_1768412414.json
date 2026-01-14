@@ -1,0 +1,33 @@
+{
+  "test_id": "pegatron-joule-cpu-bandwidth",
+  "execution_id": 134,
+  "parameters": {
+    "cpus": 10,
+    "iperf_bandwidth_mbps": 50
+  },
+  "status": "failed",
+  "deployment": {
+    "descriptor_id": "fe292cc3-67c2-49d1-9f7e-6596bd374cd3",
+    "instance_id": "a90cb529-aeb8-4bd7-80e3-1fd731c7593d",
+    "operation_id": "56dfb4fe-df32-4332-9f82-b3caf2137617",
+    "state": "COMPLETED"
+  },
+  "timestamp": "2026-01-14T17:40:14.803607",
+  "raw_data": {
+    "execution_id": 134,
+    "sideload_url": "http://192.168.206.82:8080",
+    "sideload_metadata": {
+      "instance_id": "139d2f51-b3c2-4a94-a6a3-401464537f23",
+      "node_name": null,
+      "ip_address": "192.168.206.82",
+      "port": 8080
+    },
+    "parameters": {
+      "cpus": 10,
+      "iperf_bandwidth_mbps": 50
+    },
+    "runs": [],
+    "total_runs": 1,
+    "successful_runs": 0
+  }
+}

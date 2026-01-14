@@ -6,6 +6,7 @@ import time
 import uuid
 from datetime import datetime
 from itertools import product
+from pathlib import Path
 
 import numpy as np
 import requests
@@ -13,24 +14,28 @@ import yaml
 from flask import Flask, jsonify, request
 
 import db
-from influx_writer import InfluxWriter
-from sideload_client import SideloadClient
-from teiv_client import TEIVClient
 from ue_client import UEClient
 
-influx = InfluxWriter()
-teiv = TEIVClient()
 db.init_db()
-teiv.load_cache()
-
-print(f"[STARTUP] Cached {len(teiv.cache)} entities")
 app = Flask(__name__)
 ue = UEClient()
-sideload = SideloadClient()
 
 NFO_BASE = os.getenv("NFO_BASE_URL", "")
 RAPP_URL = os.getenv("RAPP_URL", "")
 TEST_CASES_DIR = "test_cases"
+RESULTS_DIR = Path("test_results")
+RESULTS_DIR.mkdir(exist_ok=True)
+
+
+def save_execution_results(test_id, exec_id, param_set, data):
+    """Save raw execution results to JSON file with parameter naming"""
+    param_suffix = "_".join([f"{k}_{v}" for k, v in sorted(param_set.items())])
+    filepath = RESULTS_DIR / f"exec_{exec_id}_{test_id}_{param_suffix}_{int(time.time())}.json"
+
+    with open(filepath, 'w') as f:
+        json.dump(data, f, indent=2)
+
+    return str(filepath)
 
 
 def check_ue_status():
@@ -71,52 +76,14 @@ def toggle_airplane_mode():
     except:
         pass
 
-@app.route('/ue/airplane/on', methods=['POST'])
-def ue_airplane_on():
-    """Enable airplane mode"""
-    try:
-        success = ue.enable_airplane_mode()
-        return jsonify({'success': success, 'airplane_mode': True})
-    finally:
-        ue.close()
-
-@app.route('/ue/airplane/off', methods=['POST'])
-def ue_airplane_off():
-    """Disable airplane mode"""
-    try:
-        success = ue.disable_airplane_mode()
-        return jsonify({'success': success, 'airplane_mode': False})
-    finally:
-        ue.close()
 
 def terminate_gnb(instance_id):
     """Terminate gNB deployment"""
     try:
         resp = requests.post(f"{NFO_BASE}/deployments/{instance_id}/terminate/", timeout=60)
-        print(f"[DEBUG] Termination: {resp.json()}")
+        print(f"[INFO] Termination: {resp.json()}")
     except Exception as e:
         print(f"[ERROR] Termination failed: {e}")
-
-
-def get_sideload_url(instance_id=None, node_name=None):
-    """Get sideload URL and validate accessibility"""
-    if instance_id:
-        info = db.get_sideload_ip(instance_id)
-    elif node_name:
-        info = db.get_sideload_by_node(node_name)
-    else:
-        return None
-
-    if not info:
-        return None
-
-    url = f"http://{info['ip_address']}:{info['port']}"
-
-    try:
-        resp = requests.get(f"{url}/health", timeout=5)
-        return url if resp.status_code == 200 else None
-    except:
-        return None
 
 
 def deploy_via_nfo(config):
@@ -156,6 +123,478 @@ def deploy_via_nfo(config):
         "instance_id": instance_id,
         "operation_id": resp.json()["vnfLcmOpOccId"],
         "state": resp.json()["operationState"],
+    }
+
+
+def generate_permutations(params):
+    """Generate all permutations from parameter arrays"""
+    keys = []
+    value_lists = []
+
+    for key, value in params.items():
+        keys.append(key)
+        if isinstance(value, list):
+            value_lists.append(value)
+        else:
+            value_lists.append([value])
+
+    permutations = []
+    for values in product(*value_lists):
+        permutations.append(dict(zip(keys, values)))
+
+    return permutations
+
+
+def fetch_sideload_metrics(sideload_url, duration, test_id, exec_id, run_idx, param_set, ptp_interface=None):
+    """Fetch all metrics from sideload and save raw dumps"""
+
+    param_suffix = "_".join([f"{k}_{v}" for k, v in sorted(param_set.items())])
+    metrics_dir = RESULTS_DIR / "sideload_dumps" / test_id / param_suffix / str(exec_id)
+    metrics_dir.mkdir(parents=True, exist_ok=True)
+
+    results = {
+        "cpu_thread": {"data": None, "raw_file": None, "status": None},
+        "cpu_core": {"data": None, "raw_file": None, "status": None},
+        "memory": {"data": None, "raw_file": None, "status": None},
+        "disk": {"data": None, "raw_file": None, "status": None},
+        "hugepages": {"data": None, "raw_file": None, "status": None},
+        "power": {"data": None, "raw_file": None, "status": None},
+        "network": {"data": None, "raw_file": None, "status": None},
+        "ptp": {"data": None, "raw_file": None, "status": None},
+    }
+
+    def fetch_cpu_thread():
+        try:
+            resp = requests.post(
+                f"{sideload_url}/perf/thread_cpu_monitor",
+                json={"duration": duration, "pgrep": "softmodem"},
+                timeout=duration + 10,
+            )
+            if resp.status_code == 200:
+                data = resp.json()
+                results["cpu_thread"]["data"] = data
+                results["cpu_thread"]["status"] = "SUCCESS"
+
+                raw_file = metrics_dir / f"run_{run_idx}_cpu_thread.json"
+                with open(raw_file, 'w') as f:
+                    json.dump(data, f, indent=2)
+                results["cpu_thread"]["raw_file"] = str(raw_file)
+            else:
+                results["cpu_thread"]["status"] = f"FAIL_HTTP_{resp.status_code}"
+        except Exception as e:
+            results["cpu_thread"]["status"] = f"ERROR_{str(e)}"
+            print(f"[ERROR] Thread CPU failed: {e}")
+
+    def fetch_cpu_cores():
+        try:
+            resp = requests.post(
+                f"{sideload_url}/cpu/monitor",
+                json={"duration": duration},
+                timeout=duration + 10,
+            )
+            if resp.status_code == 200:
+                data = resp.json()
+                results["cpu_core"]["data"] = data
+                results["cpu_core"]["status"] = "SUCCESS"
+
+                raw_file = metrics_dir / f"run_{run_idx}_cpu_core.json"
+                with open(raw_file, 'w') as f:
+                    json.dump(data, f, indent=2)
+                results["cpu_core"]["raw_file"] = str(raw_file)
+            else:
+                results["cpu_core"]["status"] = f"FAIL_HTTP_{resp.status_code}"
+        except Exception as e:
+            results["cpu_core"]["status"] = f"ERROR_{str(e)}"
+            print(f"[ERROR] CPU core failed: {e}")
+
+    def fetch_memory():
+        try:
+            resp = requests.post(
+                f"{sideload_url}/memory/monitor",
+                json={"duration": duration},
+                timeout=duration + 10,
+            )
+            if resp.status_code == 200:
+                data = resp.json()
+                results["memory"]["data"] = data
+                results["memory"]["status"] = "SUCCESS"
+
+                raw_file = metrics_dir / f"run_{run_idx}_memory.json"
+                with open(raw_file, 'w') as f:
+                    json.dump(data, f, indent=2)
+                results["memory"]["raw_file"] = str(raw_file)
+            else:
+                results["memory"]["status"] = f"FAIL_HTTP_{resp.status_code}"
+        except Exception as e:
+            results["memory"]["status"] = f"ERROR_{str(e)}"
+            print(f"[ERROR] Memory failed: {e}")
+
+    def fetch_disk():
+        try:
+            resp = requests.post(
+                f"{sideload_url}/disk/monitor",
+                json={"device": "sda", "duration": duration},
+                timeout=duration + 10,
+            )
+            if resp.status_code == 200:
+                data = resp.json()
+                results["disk"]["data"] = data
+                results["disk"]["status"] = "SUCCESS"
+
+                raw_file = metrics_dir / f"run_{run_idx}_disk.json"
+                with open(raw_file, 'w') as f:
+                    json.dump(data, f, indent=2)
+                results["disk"]["raw_file"] = str(raw_file)
+            else:
+                results["disk"]["status"] = f"FAIL_HTTP_{resp.status_code}"
+        except Exception as e:
+            results["disk"]["status"] = f"ERROR_{str(e)}"
+            print(f"[ERROR] Disk failed: {e}")
+
+    def fetch_hugepages():
+        try:
+            resp = requests.post(
+                f"{sideload_url}/hugepages/monitor",
+                json={"duration": duration},
+                timeout=duration + 10,
+            )
+            if resp.status_code == 200:
+                data = resp.json()
+                results["hugepages"]["data"] = data
+                results["hugepages"]["status"] = "SUCCESS"
+
+                raw_file = metrics_dir / f"run_{run_idx}_hugepages.json"
+                with open(raw_file, 'w') as f:
+                    json.dump(data, f, indent=2)
+                results["hugepages"]["raw_file"] = str(raw_file)
+            else:
+                results["hugepages"]["status"] = f"FAIL_HTTP_{resp.status_code}"
+        except Exception as e:
+            results["hugepages"]["status"] = f"ERROR_{str(e)}"
+            print(f"[ERROR] Hugepages failed: {e}")
+
+    def fetch_power():
+        try:
+            resp = requests.post(
+                f"{sideload_url}/power/monitor",
+                json={"duration": duration},
+                timeout=duration + 10,
+            )
+            if resp.status_code == 200:
+                data = resp.json()
+                results["power"]["data"] = data
+                results["power"]["status"] = "SUCCESS"
+
+                raw_file = metrics_dir / f"run_{run_idx}_power.json"
+                with open(raw_file, 'w') as f:
+                    json.dump(data, f, indent=2)
+                results["power"]["raw_file"] = str(raw_file)
+            else:
+                results["power"]["status"] = f"FAIL_HTTP_{resp.status_code}"
+        except Exception as e:
+            results["power"]["status"] = f"ERROR_{str(e)}"
+            print(f"[ERROR] Power failed: {e}")
+
+    def fetch_network():
+        try:
+            resp = requests.post(
+                f"{sideload_url}/network/monitor",
+                json={"duration": duration, "interfaces": ["all"]},
+                timeout=duration + 10,
+            )
+            if resp.status_code == 200:
+                data = resp.json()
+                results["network"]["data"] = data
+                results["network"]["status"] = "SUCCESS"
+
+                raw_file = metrics_dir / f"run_{run_idx}_network.json"
+                with open(raw_file, 'w') as f:
+                    json.dump(data, f, indent=2)
+                results["network"]["raw_file"] = str(raw_file)
+            else:
+                results["network"]["status"] = f"FAIL_HTTP_{resp.status_code}"
+        except Exception as e:
+            results["network"]["status"] = f"ERROR_{str(e)}"
+            print(f"[ERROR] Network failed: {e}")
+
+    def fetch_ptp():
+        if not ptp_interface:
+            return
+
+        try:
+            resp = requests.post(
+                f"{sideload_url}/ptp/monitor",
+                json={"duration": duration, "interface": ptp_interface, "include_timeseries": True},
+                timeout=duration + 10,
+            )
+            if resp.status_code == 200:
+                data = resp.json()
+                results["ptp"]["data"] = data
+                results["ptp"]["status"] = "SUCCESS"
+
+                raw_file = metrics_dir / f"run_{run_idx}_ptp.json"
+                with open(raw_file, 'w') as f:
+                    json.dump(data, f, indent=2)
+                results["ptp"]["raw_file"] = str(raw_file)
+            else:
+                results["ptp"]["status"] = f"FAIL_HTTP_{resp.status_code}"
+        except Exception as e:
+            results["ptp"]["status"] = f"ERROR_{str(e)}"
+            print(f"[ERROR] PTP failed: {e}")
+
+    threads = [
+        threading.Thread(target=fetch_cpu_thread, daemon=True),
+        threading.Thread(target=fetch_cpu_cores, daemon=True),
+        threading.Thread(target=fetch_memory, daemon=True),
+        threading.Thread(target=fetch_disk, daemon=True),
+        threading.Thread(target=fetch_hugepages, daemon=True),
+        threading.Thread(target=fetch_power, daemon=True),
+        threading.Thread(target=fetch_network, daemon=True),
+        threading.Thread(target=fetch_ptp, daemon=True),
+    ]
+
+    for t in threads:
+        t.start()
+
+    for t in threads:
+        t.join(timeout=duration + 15)
+
+    summary = {
+        "total_metrics": len(results),
+        "successful": sum(1 for r in results.values() if r["status"] == "SUCCESS"),
+        "failed": sum(1 for r in results.values() if r["status"] and r["status"] != "SUCCESS"),
+    }
+
+    print(f"[INFO] Sideload metrics: {summary['successful']}/{summary['total_metrics']} successful")
+
+    return results, summary
+
+
+def collect_test_runs(test_case, param_set, exec_id, test_id):
+    """Collect data from all test runs"""
+    sideload_instance_id = test_case.get("target", {}).get("sideloadInstanceId")
+    ptp_interface = test_case.get("target", {}).get("ptpInterface")
+    iperf_duration = test_case.get("execution", {}).get("iperfDuration", 10)
+    monitor_duration = iperf_duration + 2
+    runs_per_case = test_case.get("execution", {}).get("runsPerCase", 3)
+
+    sideload_url = None
+    sideload_metadata = None
+
+    if sideload_instance_id:
+        sideload_info = db.get_sideload_ip(sideload_instance_id)
+        if sideload_info:
+            sideload_url = f"http://{sideload_info['ip_address']}:{sideload_info['port']}"
+            sideload_metadata = {
+                "instance_id": sideload_instance_id,
+                "node_name": sideload_info.get("node_name"),
+                "ip_address": sideload_info.get("ip_address"),
+                "port": sideload_info.get("port"),
+            }
+
+            try:
+                rt_resp = requests.get(f"{sideload_url}/report", timeout=10)
+                if rt_resp.status_code == 200:
+                    sideload_metadata["rt_config"] = rt_resp.json().get("rt_config", {})
+            except Exception as e:
+                print(f"[WARN] Failed to fetch RT config: {e}")
+
+    runs = []
+
+    for run_idx in range(runs_per_case):
+        print(f"[INFO] Run {run_idx + 1}/{runs_per_case}")
+
+        toggle_airplane_mode()
+
+        attached, ue_status = check_ue_status()
+        if not attached or not ue_status:
+            print("[WARN] UE not attached")
+            continue
+
+        monitoring_results = {}
+        monitoring_summary = {}
+
+        if sideload_url:
+            monitoring_results, monitoring_summary = fetch_sideload_metrics(
+                sideload_url, monitor_duration, test_id, exec_id, run_idx, param_set, ptp_interface=ptp_interface
+            )
+
+        bandwidth_mbps = param_set.get("iperf_bandwidth_mbps", 50)
+        iperf_result = run_iperf_test(bandwidth_mbps=bandwidth_mbps, duration=iperf_duration)
+
+        if not iperf_result:
+            print("[WARN] iperf failed")
+            continue
+
+        runs.append({
+            "run_id": run_idx,
+            "timestamp": datetime.utcnow().isoformat(),
+            "ue_status": ue_status,
+            "iperf": iperf_result,
+            "monitoring": monitoring_results,
+            "monitoring_summary": monitoring_summary,
+        })
+
+        time.sleep(3)
+
+    return {
+        "execution_id": exec_id,
+        "sideload_url": sideload_url,
+        "sideload_metadata": sideload_metadata,
+        "parameters": param_set,
+        "runs": runs,
+        "total_runs": runs_per_case,
+        "successful_runs": len(runs),
+    }
+
+
+def compute_averages(runs):
+    """Compute average metrics from runs"""
+    if not runs:
+        return {}
+
+    throughputs = []
+    jitters = []
+    losses = []
+    rsrps = []
+    rsrqs = []
+    sinrs = []
+
+    for run in runs:
+        iperf = run.get("iperf", {})
+        throughputs.append(iperf.get("throughput_mbps", 0))
+        jitters.append(iperf.get("jitter_ms", 0))
+        losses.append(iperf.get("lost_percent", 0))
+
+        ue_status = run.get("ue_status", {})
+        signal = ue_status.get("signal", {}) or {}
+        rsrps.append(signal.get("rsrp", 0))
+        rsrqs.append(signal.get("rsrq", 0))
+        sinrs.append(signal.get("sinr", 0))
+
+    avg_results = {
+        "successful_runs": len(runs),
+        "avg_throughput_mbps": float(np.mean(throughputs)),
+        "avg_jitter_ms": float(np.mean(jitters)),
+        "avg_loss_percent": float(np.mean(losses)),
+        "avg_rsrp_dbm": float(np.mean(rsrps)),
+        "avg_rsrq_db": float(np.mean(rsrqs)),
+        "avg_sinr_db": float(np.mean(sinrs)),
+    }
+
+    cpu_breakdown = {}
+    cpu_runs = 0
+
+    for run in runs:
+        monitoring = run.get("monitoring", {})
+        cpu_thread = monitoring.get("cpu_thread")
+
+        if cpu_thread and cpu_thread.get("threads"):
+            cpu_runs += 1
+            for thread in cpu_thread["threads"]:
+                name = thread["name"]
+                cpu_breakdown[name] = cpu_breakdown.get(name, 0) + thread["avg_cpu"]
+
+    if cpu_runs > 0:
+        for name in cpu_breakdown:
+            cpu_breakdown[name] /= cpu_runs
+        avg_results["avg_cpu_percent"] = sum(cpu_breakdown.values())
+        avg_results["cpu_breakdown"] = cpu_breakdown
+
+    return avg_results
+
+
+def execute_single_test(test_case, param_set, test_id):
+    """Execute single test run - collect all data"""
+
+    helm_values = {
+        "config": test_case.get("config", {}),
+        "resources": {
+            "define": True,
+            "limits": {"nf": test_case.get("baseline", {})},
+            "requests": {"nf": test_case.get("baseline", {})},
+        },
+    }
+
+    if test_case.get("extra"):
+        helm_values["config"].update(test_case["extra"])
+
+    helm_values["config"].update(param_set)
+
+    nfo_config = {
+        "name": f"test-{test_id}-{int(time.time())}",
+        "description": test_case.get("description", ""),
+        "profile_type": "kubernetes",
+        "artifact_repo_url": test_case["target"]["artifactRepoUrl"],
+        "artifact_name": test_case["target"]["artifactName"],
+        "artifact_repo_branch": test_case["target"]["branch"],
+        "target_cluster": test_case["target"]["cluster"],
+        "values": helm_values,
+    }
+
+    deployment = deploy_via_nfo(nfo_config)
+
+    if not deployment.get("instance_id"):
+        return {
+            "error": "Deployment failed",
+            "parameters": param_set,
+            "deployment_response": deployment
+        }
+
+    exec_id = db.record_test_start(
+        test_id=test_id,
+        gnb_instance_id=deployment["instance_id"],
+        sideload_instance_id=test_case.get("target", {}).get("sideloadInstanceId"),
+        oru_vendor=test_case.get("target", {}).get("oduName", "unknown"),
+    )
+
+    stabilization_time = test_case.get("execution", {}).get("stabilizationTime", 30)
+    print(f"[INFO] Waiting {stabilization_time}s for stabilization")
+    time.sleep(stabilization_time)
+
+    run_results = collect_test_runs(test_case, param_set, exec_id, test_id)
+
+    if run_results["runs"]:
+        avg_results = compute_averages(run_results["runs"])
+        db.record_test_results(
+            exec_id,
+            len(run_results["runs"]),
+            avg_results["avg_throughput_mbps"],
+            avg_results["avg_jitter_ms"],
+            avg_results["avg_loss_percent"],
+            avg_results["avg_rsrp_dbm"],
+            avg_results["avg_rsrq_db"],
+            avg_results["avg_sinr_db"],
+            avg_results.get("avg_cpu_percent"),
+            avg_results.get("cpu_breakdown"),
+        )
+        db.update_test_status(exec_id, "completed")
+        status = "completed"
+    else:
+        status = "failed"
+        db.update_test_status(exec_id, status)
+
+    terminate_gnb(deployment["instance_id"])
+
+    execution_data = {
+        "test_id": test_id,
+        "execution_id": exec_id,
+        "parameters": param_set,
+        "status": status,
+        "deployment": deployment,
+        "timestamp": datetime.utcnow().isoformat(),
+        "raw_data": run_results
+    }
+
+    filepath = save_execution_results(test_id, exec_id, param_set, execution_data)
+
+    return {
+        "parameters": param_set,
+        "status": status,
+        "execution_id": exec_id,
+        "deployment": deployment,
+        "results_file": filepath,
+        "raw_data": run_results
     }
 
 
@@ -206,9 +645,30 @@ def ue_iperf():
         data = request.json or {}
         result = ue.run_iperf(
             bitrate=data.get("bitrate", 10),
-            duration=data.get("duration", 20)
+            duration=data.get("duration", 20),
+            target='192.168.8.103'
         )
         return jsonify(result)
+    finally:
+        ue.close()
+
+
+@app.route('/ue/airplane/on', methods=['POST'])
+def ue_airplane_on():
+    """Enable airplane mode"""
+    try:
+        success = ue.enable_airplane_mode()
+        return jsonify({'success': success, 'airplane_mode': True})
+    finally:
+        ue.close()
+
+
+@app.route('/ue/airplane/off', methods=['POST'])
+def ue_airplane_off():
+    """Disable airplane mode"""
+    try:
+        success = ue.disable_airplane_mode()
+        return jsonify({'success': success, 'airplane_mode': False})
     finally:
         ue.close()
 
@@ -309,65 +769,6 @@ def sideload_report(instance_id):
         return jsonify({"error": f"failed to get metrics: {str(e)}"}), 500
 
 
-# ========== TEIV ENDPOINTS ==========
-
-@app.route("/teiv/sync", methods=["POST"])
-def teiv_sync():
-    """Refresh TEIV cache"""
-    count = teiv.load_cache()
-
-    for record in teiv.to_db_format():
-        db.upsert_teiv_cache(
-            record["entity_type"],
-            record["entity_urn"],
-            record["attributes_json"]
-        )
-
-    return jsonify({"status": "OK", "entities": count})
-
-
-@app.route("/teiv/odus", methods=["GET"])
-def teiv_list_odus():
-    """List all ODUs from TEIV"""
-    return jsonify({"odus": teiv.list_odus()})
-
-
-@app.route("/teiv/sync_to_influx", methods=["POST"])
-def teiv_sync_to_influx():
-    """Sync TEIV topology to InfluxDB"""
-    count = teiv.load_cache()
-
-    entities = []
-    for entity_urn, entity_data in teiv.cache.items():
-        entity_type = entity_data.get("type")
-        data = entity_data.get("data", {})
-        attributes = data.get("attributes", {})
-
-        if entity_type == "ODU":
-            entities.append({
-                "type": "ODUFunction",
-                "urn": entity_urn,
-                "attributes": attributes
-            })
-        elif entity_type == "Cell":
-            entities.append({
-                "type": "NRCellDU",
-                "urn": entity_urn,
-                "attributes": attributes
-            })
-
-    try:
-        if entities:
-            influx.write_teiv_snapshot(entities)
-
-        return jsonify({
-            "status": "OK",
-            "entities_synced": len(entities),
-        })
-    except Exception as e:
-        return jsonify({"error": str(e)}), 500
-
-
 # ========== TEST EXECUTION ==========
 
 @app.route("/tests/load", methods=["POST"])
@@ -403,15 +804,9 @@ def tests_list():
     })
 
 
-@app.route("/health", methods=["GET"])
-def health():
-    """Health check"""
-    return jsonify({"status": "healthy"}), 200
-
-
 @app.route("/tests/run/<test_id>", methods=["POST"])
 def tests_run(test_id):
-    """Execute test case"""
+    """Execute test case - dump all data to JSON per permutation"""
     row = db.get_test_case(test_id)
     if not row:
         return jsonify({"error": "Test not found"}), 404
@@ -419,329 +814,29 @@ def tests_run(test_id):
     with open(row[0]) as f:
         test_case = yaml.safe_load(f)
 
-    # Optional TEIV lookup for metadata
-    odu_name = test_case.get("target", {}).get("oduName", "unknown")
-    if test_case.get("target", {}).get("oduUrn"):
-        odu = teiv.get_odu(test_case["target"]["oduUrn"])
-        if odu:
-            odu_name = odu.get("attributes", {}).get("gNBDUName", odu_name)
-
     params = test_case.get("parameters", {})
     param_permutations = generate_permutations(params)
 
-    results = []
+    results_summary = {
+        "test_id": test_id,
+        "timestamp": datetime.utcnow().isoformat(),
+        "total_permutations": len(param_permutations),
+        "permutations": []
+    }
+
     for param_set in param_permutations:
-        result = execute_single_test(test_case, odu_name, param_set, test_id)
-        results.append(result)
-
-    return jsonify({"status": "OK", "results": results})
-
-
-def generate_permutations(params):
-    """Generate all permutations from parameter arrays"""
-    keys = []
-    value_lists = []
-
-    for key, value in params.items():
-        keys.append(key)
-        if isinstance(value, list):
-            value_lists.append(value)
-        else:
-            value_lists.append([value])
-
-    permutations = []
-    for values in product(*value_lists):
-        permutations.append(dict(zip(keys, values)))
-
-    return permutations
-
-
-def execute_single_test(test_case, odu_name, param_set, test_id):
-    """Execute single test run"""
-
-    # Build Helm values from test case
-    helm_values = {
-        "config": test_case.get("config", {}),
-        "resources": {
-            "define": True,
-            "limits": {"nf": test_case.get("baseline", {})},
-            "requests": {"nf": test_case.get("baseline", {})},
-        },
-    }
-
-    if test_case.get("extra"):
-        helm_values["config"].update(test_case["extra"])
-
-    # Override with parameter set
-    helm_values["config"].update(param_set)
-
-    nfo_config = {
-        "name": f"test-{test_id}-{int(time.time())}",
-        "description": test_case.get("description", ""),
-        "profile_type": "kubernetes",
-        "artifact_repo_url": test_case["target"]["artifactRepoUrl"],
-        "artifact_name": test_case["target"]["artifactName"],
-        "artifact_repo_branch": test_case["target"]["branch"],
-        "target_cluster": test_case["target"]["cluster"],
-        "values": helm_values,
-    }
-
-    deployment = deploy_via_nfo(nfo_config)
-
-    if not deployment.get("instance_id"):
-        return {"error": "Deployment failed", "parameters": param_set}
-
-    exec_id = db.record_test_start(
-        test_id=test_id,
-        gnb_instance_id=deployment["instance_id"],
-        sideload_instance_id=test_case.get("target", {}).get("sideloadInstanceId"),
-        oru_vendor=odu_name,
-    )
-
-    time.sleep(test_case.get("execution", {}).get("stabilizationTime", 30))
-
-    results = []
-    sideload_instance_id = test_case.get("target", {}).get("sideloadInstanceId")
-    iperf_duration = test_case.get("execution", {}).get("iperfDuration", 10)
-    monitor_duration = iperf_duration + 2
-    runs_per_case = test_case.get("execution", {}).get("runsPerCase", 3)
-
-    for run in range(runs_per_case):
-        print(f"[DEBUG] Run {run + 1}/{runs_per_case}")
-
-        toggle_airplane_mode()
-
-        attached, ue_status = check_ue_status()
-        if not attached or not ue_status or "signal" not in ue_status:
-            print("[WARN] UE not attached, skipping run")
-            continue
-
-        # Start monitoring
-        monitoring_results = {
-            "cpu_thread": {"data": None},
-            "cpu_core": {"data": None},
-            "memory": {"data": None},
-            "disk": {"data": None},
-            "hugepages": {"data": None},
-        }
-
-        if sideload_instance_id:
-            sideload_info = db.get_sideload_ip(sideload_instance_id)
-            if sideload_info:
-                sideload_url = f"http://{sideload_info['ip_address']}:{sideload_info['port']}"
-                start_monitoring(sideload_url, monitor_duration, monitoring_results)
-
-        # Run iperf
-        bandwidth_mbps = param_set.get("iperf_bandwidth_mbps", 50)
-        iperf = run_iperf_test(bandwidth_mbps=bandwidth_mbps, duration=iperf_duration)
-        if not iperf:
-            print("[WARN] iperf failed, skipping run")
-            continue
-
-        signal = ue_status.get("signal", {}) or {}
-
-        results.append({
-            "throughput": iperf["throughput_mbps"],
-            "jitter": iperf["jitter_ms"],
-            "loss": iperf["lost_percent"],
-            "rsrp": signal.get("rsrp", 0),
-            "rsrq": signal.get("rsrq", 0),
-            "sinr": signal.get("sinr", 0),
-            "cpu_thread_data": monitoring_results["cpu_thread"]["data"],
-            "cpu_core_data": monitoring_results["cpu_core"]["data"],
-            "memory_data": monitoring_results["memory"]["data"],
-            "disk_data": monitoring_results["disk"]["data"],
-            "hugepages_data": monitoring_results["hugepages"]["data"],
+        result = execute_single_test(test_case, param_set, test_id)
+        results_summary["permutations"].append({
+            "parameters": result["parameters"],
+            "status": result["status"],
+            "execution_id": result["execution_id"],
+            "results_file": result.get("results_file")
         })
 
-        # Write monitoring to InfluxDB
-        write_monitoring_to_influx(test_id, exec_id, run, odu_name, monitoring_results)
-
-        time.sleep(3)
-
-    # Aggregate and record results
-    if results:
-        avg_results = compute_averages(results)
-
-        db.record_test_results(
-            exec_id,
-            len(results),
-            avg_results["avg_throughput_mbps"],
-            avg_results["avg_jitter_ms"],
-            avg_results["avg_loss_percent"],
-            avg_results["avg_rsrp_dbm"],
-            avg_results["avg_rsrq_db"],
-            avg_results["avg_sinr_db"],
-            avg_results.get("avg_cpu_percent"),
-            avg_results.get("cpu_breakdown"),
-        )
-
-        influx.write_test_execution(
-            test_id=test_id,
-            execution_id=exec_id,
-            oru_vendor=odu_name,
-            results=avg_results,
-        )
-
-        db.update_test_status(exec_id, "completed")
-    else:
-        avg_results = {"successful_runs": 0}
-        db.update_test_status(exec_id, "failed")
-
-    terminate_gnb(deployment["instance_id"])
-
-    return {
-        "parameters": param_set,
-        "status": "completed",
-        "execution_id": exec_id,
-        "results": avg_results,
-    }
-
-
-def start_monitoring(sideload_url, duration, results_dict):
-    """Start monitoring threads"""
-
-    def fetch_cpu_thread():
-        try:
-            resp = requests.post(
-                f"{sideload_url}/perf/thread_cpu_monitor",
-                json={"duration": duration, "pgrep": "softmodem"},
-                timeout=duration + 10,
-            )
-            if resp.status_code == 200:
-                results_dict["cpu_thread"]["data"] = resp.json()
-        except Exception as e:
-            print(f"[WARN] Thread CPU failed: {e}")
-
-    def fetch_cpu_cores():
-        try:
-            resp = requests.post(
-                f"{sideload_url}/cpu/monitor",
-                json={"duration": duration},
-                timeout=duration + 10,
-            )
-            if resp.status_code == 200:
-                results_dict["cpu_core"]["data"] = resp.json()
-        except Exception as e:
-            print(f"[WARN] CPU core failed: {e}")
-
-    def fetch_memory():
-        try:
-            resp = requests.post(
-                f"{sideload_url}/memory/monitor",
-                json={"duration": duration},
-                timeout=duration + 10,
-            )
-            if resp.status_code == 200:
-                results_dict["memory"]["data"] = resp.json()
-        except Exception as e:
-            print(f"[WARN] Memory failed: {e}")
-
-    def fetch_disk():
-        try:
-            resp = requests.post(
-                f"{sideload_url}/disk/monitor",
-                json={"device": "sda", "duration": duration},
-                timeout=duration + 10,
-            )
-            if resp.status_code == 200:
-                results_dict["disk"]["data"] = resp.json()
-        except Exception as e:
-            print(f"[WARN] Disk failed: {e}")
-
-    def fetch_hugepages():
-        try:
-            resp = requests.post(
-                f"{sideload_url}/hugepages/monitor",
-                json={"duration": duration},
-                timeout=duration + 10,
-            )
-            if resp.status_code == 200:
-                results_dict["hugepages"]["data"] = resp.json()
-        except Exception as e:
-            print(f"[WARN] Hugepages failed: {e}")
-
-    threads = [
-        threading.Thread(target=fetch_cpu_thread, daemon=True),
-        threading.Thread(target=fetch_cpu_cores, daemon=True),
-        threading.Thread(target=fetch_memory, daemon=True),
-        threading.Thread(target=fetch_disk, daemon=True),
-        threading.Thread(target=fetch_hugepages, daemon=True),
-    ]
-
-    for t in threads:
-        t.start()
-
-    for t in threads:
-        t.join(timeout=duration + 10)
-
-
-def write_monitoring_to_influx(test_id, exec_id, run_id, oru_vendor, monitoring_results):
-    """Write monitoring data to InfluxDB"""
-
-    # Thread CPU
-    cpu_thread_data = monitoring_results["cpu_thread"]["data"]
-    if cpu_thread_data and cpu_thread_data.get("threads"):
-        for thread in cpu_thread_data["threads"]:
-            try:
-                influx.write_thread_cpu_sample(
-                    test_id=test_id,
-                    execution_id=exec_id,
-                    run_id=run_id,
-                    oru_vendor=oru_vendor,
-                    thread_name=thread["name"],
-                    cpu_percent=thread["avg_cpu"],
-                    core=thread.get("core"),
-                )
-            except Exception as e:
-                print(f"[WARN] Thread write failed: {e}")
-
-    # Other monitoring
-    try:
-        if monitoring_results["cpu_core"]["data"]:
-            influx.write_cpu_monitor(test_id, exec_id, run_id, monitoring_results["cpu_core"]["data"])
-
-        if monitoring_results["memory"]["data"]:
-            influx.write_memory_monitor(test_id, exec_id, run_id, monitoring_results["memory"]["data"])
-
-        if monitoring_results["disk"]["data"]:
-            influx.write_disk_monitor(test_id, exec_id, run_id, monitoring_results["disk"]["data"])
-
-        if monitoring_results["hugepages"]["data"]:
-            influx.write_hugepages_monitor(test_id, exec_id, run_id, monitoring_results["hugepages"]["data"])
-    except Exception as e:
-        print(f"[WARN] InfluxDB write failed: {e}")
-
-
-def compute_averages(results):
-    """Compute average metrics"""
-    avg_results = {
-        "successful_runs": len(results),
-        "avg_throughput_mbps": float(np.mean([r["throughput"] for r in results])),
-        "avg_jitter_ms": float(np.mean([r["jitter"] for r in results])),
-        "avg_loss_percent": float(np.mean([r["loss"] for r in results])),
-        "avg_rsrp_dbm": float(np.mean([r["rsrp"] for r in results])),
-        "avg_rsrq_db": float(np.mean([r["rsrq"] for r in results])),
-        "avg_sinr_db": float(np.mean([r["sinr"] for r in results])),
-    }
-
-    cpu_breakdown = {}
-    cpu_runs = 0
-
-    for r in results:
-        if r.get("cpu_thread_data") and r["cpu_thread_data"].get("threads"):
-            cpu_runs += 1
-            for thread in r["cpu_thread_data"]["threads"]:
-                name = thread["name"]
-                cpu_breakdown[name] = cpu_breakdown.get(name, 0) + thread["avg_cpu"]
-
-    if cpu_runs > 0:
-        for name in cpu_breakdown:
-            cpu_breakdown[name] /= cpu_runs
-        avg_results["avg_cpu_percent"] = sum(cpu_breakdown.values())
-        avg_results["cpu_breakdown"] = cpu_breakdown
-
-    return avg_results
+    return jsonify({
+        "status": "OK",
+        "summary": results_summary
+    })
 
 
 @app.route("/tests/results", methods=["GET"])
@@ -784,6 +879,146 @@ def tests_results():
             })
 
         return jsonify({"results": results, "count": len(results)})
+
+
+# ========== RESULTS MANAGEMENT ==========
+
+@app.route("/results/export/<execution_id>", methods=["GET"])
+def export_results(execution_id):
+    """Export raw JSON results for processing"""
+    files = list(RESULTS_DIR.glob(f"exec_{execution_id}_*.json"))
+    if not files:
+        return jsonify({"error": "Results not found"}), 404
+
+    with open(files[0]) as f:
+        data = json.load(f)
+
+    return jsonify(data)
+
+
+@app.route("/results/list", methods=["GET"])
+def list_results():
+    """List all saved result files"""
+    files = []
+    for f in RESULTS_DIR.glob("exec_*.json"):
+        files.append({
+            "filename": f.name,
+            "size_bytes": f.stat().st_size,
+            "modified": datetime.fromtimestamp(f.stat().st_mtime).isoformat()
+        })
+
+    return jsonify({"files": files, "count": len(files)})
+
+
+@app.route("/results/sideload/<exec_id>/<run_id>/<metric_type>", methods=["GET"])
+def get_sideload_metric(exec_id, run_id, metric_type):
+    """Get specific sideload metric dump"""
+    metrics_dir = RESULTS_DIR / "sideload_dumps" / exec_id
+    metric_file = metrics_dir / f"run_{run_id}_{metric_type}.json"
+
+    if not metric_file.exists():
+        return jsonify({"error": "Metric file not found"}), 404
+
+    with open(metric_file) as f:
+        data = json.load(f)
+
+    return jsonify(data)
+
+
+@app.route("/results/sideload/<exec_id>/summary", methods=["GET"])
+def get_sideload_summary(exec_id):
+    """Get summary of all sideload metrics for execution"""
+    metrics_dir = RESULTS_DIR / "sideload_dumps" / exec_id
+
+    if not metrics_dir.exists():
+        return jsonify({"error": "Execution not found"}), 404
+
+    files = list(metrics_dir.glob("*.json"))
+
+    summary = {
+        "execution_id": exec_id,
+        "total_files": len(files),
+        "runs": {},
+    }
+
+    for f in files:
+        parts = f.stem.split('_')
+        if len(parts) >= 3:
+            run_id = parts[1]
+            metric_type = '_'.join(parts[2:])
+
+            if run_id not in summary["runs"]:
+                summary["runs"][run_id] = []
+
+            summary["runs"][run_id].append({
+                "metric_type": metric_type,
+                "filename": f.name,
+                "size_bytes": f.stat().st_size,
+                "modified": datetime.fromtimestamp(f.stat().st_mtime).isoformat()
+            })
+
+    return jsonify(summary)
+
+
+@app.route("/results/analyze/<exec_id>", methods=["GET"])
+def analyze_execution(exec_id):
+    """Analyze execution with detailed breakdown"""
+    files = list(RESULTS_DIR.glob(f"exec_{exec_id}_*.json"))
+    if not files:
+        return jsonify({"error": "Execution not found"}), 404
+
+    with open(files[0]) as f:
+        data = json.load(f)
+
+    analysis = {
+        "execution_id": exec_id,
+        "test_id": data.get("test_id"),
+        "timestamp": data.get("timestamp"),
+        "permutations": [],
+    }
+
+    for perm in data.get("permutations", []):
+        raw_data = perm.get("raw_data", {})
+
+        perm_analysis = {
+            "parameters": perm.get("parameters"),
+            "status": perm.get("status"),
+            "total_runs": raw_data.get("total_runs", 0),
+            "successful_runs": raw_data.get("successful_runs", 0),
+            "sideload_metadata": raw_data.get("sideload_metadata"),
+            "runs_detail": []
+        }
+
+        for run in raw_data.get("runs", []):
+            monitoring = run.get("monitoring", {})
+            monitoring_summary = run.get("monitoring_summary", {})
+
+            run_detail = {
+                "run_id": run.get("run_id"),
+                "timestamp": run.get("timestamp"),
+                "iperf": run.get("iperf"),
+                "signal": run.get("ue_status", {}).get("signal"),
+                "monitoring_files": {
+                    k: v.get("raw_file") for k, v in monitoring.items()
+                    if v.get("raw_file")
+                },
+                "monitoring_status": {
+                    k: v.get("status") for k, v in monitoring.items()
+                },
+                "monitoring_summary": monitoring_summary,
+            }
+
+            perm_analysis["runs_detail"].append(run_detail)
+
+        analysis["permutations"].append(perm_analysis)
+
+    return jsonify(analysis)
+
+
+@app.route("/health", methods=["GET"])
+def health():
+    """Health check"""
+    return jsonify({"status": "healthy"}), 200
 
 
 if __name__ == "__main__":

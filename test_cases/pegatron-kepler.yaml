@@ -13,8 +13,8 @@ execution:
     runsPerCase: 1
     stabilizationTime: 30
 parameters:
-    cpus: [14]
-    iperf_bandwidth_mbps: [50]
+    cpus: [10,12,14]
+    iperf_bandwidth_mbps: [50,100,300,500]
 baseline:
   cpus: 10
   memory: 16Gi

@@ -1,0 +1,60 @@
+{
+  "duration": 12,
+  "hugepages": {
+    "size_1048576kB": {
+      "free": {
+        "avg": 52.0,
+        "max": 52,
+        "min": 52
+      },
+      "reserved": {
+        "avg": 0.0,
+        "max": 0,
+        "min": 0
+      },
+      "total": {
+        "avg": 60.0,
+        "max": 60,
+        "min": 60
+      },
+      "used": {
+        "avg": 8.0,
+        "max": 8,
+        "min": 8
+      },
+      "used_percent": {
+        "avg": 13.33,
+        "max": 13.33,
+        "min": 13.33
+      }
+    },
+    "size_2048kB": {
+      "free": {
+        "avg": 0.0,
+        "max": 0,
+        "min": 0
+      },
+      "reserved": {
+        "avg": 0.0,
+        "max": 0,
+        "min": 0
+      },
+      "total": {
+        "avg": 0.0,
+        "max": 0,
+        "min": 0
+      },
+      "used": {
+        "avg": 0.0,
+        "max": 0,
+        "min": 0
+      },
+      "used_percent": {
+        "avg": 0.0,
+        "max": 0,
+        "min": 0
+      }
+    }
+  },
+  "samples": 12
+}

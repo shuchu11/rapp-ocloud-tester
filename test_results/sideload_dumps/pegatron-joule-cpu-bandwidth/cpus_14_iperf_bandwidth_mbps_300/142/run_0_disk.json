@@ -1,0 +1,27 @@
+{
+  "device": "sda",
+  "duration": 12,
+  "io": {
+    "read_iops": {
+      "avg": 0.0,
+      "max": 0,
+      "min": 0
+    },
+    "read_kb": {
+      "avg": 0.0,
+      "max": 0.0,
+      "min": 0.0
+    },
+    "write_iops": {
+      "avg": 6.5,
+      "max": 27,
+      "min": 0
+    },
+    "write_kb": {
+      "avg": 55.33,
+      "max": 200.0,
+      "min": 0.0
+    }
+  },
+  "samples": 12
+}
