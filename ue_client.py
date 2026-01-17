@@ -116,15 +116,22 @@ class UEClient:
 
         return result
 
-    def run_iperf(self, bitrate=10, duration=20, target='10.45.0.1'):
+    def run_iperf(self, bitrate=10, duration=20, target='192.168.8.103'):
         """Run iperf3 downlink test"""
-        print(f"[DEBUG] iperf target: {target}")
-        cmd = f'/data/local/tmp/iperf3 -c {target} -u -b {bitrate}M -t {duration} -R -i 0 -l 1300 -Z -J'
+        print(f"[DEBUG] iperf target: {target} : duration: {duration}")
+        #cmd = f'/data/local/tmp/iperf3 -c {target} -u -b {bitrate}M -t {duration} -R -i 0 -l 1300 -Z -J'
+        cmd = f'/data/local/tmp/iperf3 -c {target} -u -b {bitrate}M -t {duration} -R -l 1300 -Z -J'
         out, code = self._run_adb(cmd, timeout=duration+10)
 
-        if code != 0 or not out:
-            return None
+        print("-"*30)
+        print(f"[DEBUG] IPerf Code {code}")
+        print(out)
 
+        # if code != 0 or not out:
+        #     return None
+
+        if not out:
+            return None
         try:
             return json.loads(out)
         except:

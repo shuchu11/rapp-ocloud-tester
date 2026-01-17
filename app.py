@@ -50,21 +50,72 @@ def check_ue_status():
     return False, None
 
 
+# def run_iperf_test(bandwidth_mbps=50, duration=10):
+#     """Execute iperf throughput test"""
+#     try:
+#         result = ue.run_iperf(bitrate=bandwidth_mbps, duration=duration)
+#         if not result or "end" not in result:
+#             return None
+#         return {
+#             "throughput_mbps": result["end"]["sum"]["bits_per_second"] / 1_000_000,
+#             "jitter_ms": result["end"]["sum"]["jitter_ms"],
+#             "lost_percent": result["end"]["sum"]["lost_percent"],
+#         }
+#     except Exception as e:
+#         print(f"[ERROR] iperf failed: {e}")
+#         return None
+
 def run_iperf_test(bandwidth_mbps=50, duration=10):
-    """Execute iperf throughput test"""
+    """Execute iperf throughput test and capture detailed timeseries"""
     try:
         result = ue.run_iperf(bitrate=bandwidth_mbps, duration=duration)
+
+        # Check for valid JSON output structure
         if not result or "end" not in result:
             return None
-        return {
-            "throughput_mbps": result["end"]["sum"]["bits_per_second"] / 1_000_000,
-            "jitter_ms": result["end"]["sum"]["jitter_ms"],
-            "lost_percent": result["end"]["sum"]["lost_percent"],
+
+        # Extract the aggregate summary
+        summary = result["end"]["sum"]
+
+        # Prepare storage for the continuous timeline
+        timeseries = {
+            "timestamps": [],
+            "throughput_mbps": [],
+            "jitter_ms": [],
+            "lost_percent": []
         }
+
+        # Parse the intervals to populate the timeseries
+        if "intervals" in result:
+            for interval in result["intervals"]:
+                # 'sum' contains the aggregate of all streams for this specific interval
+                data = interval.get("sum", {})
+
+                # Capture the time (using the 'end' of the interval as the timestamp)
+                timeseries["timestamps"].append(data.get("end", 0))
+
+                # Capture Throughput in Mbps
+                # $$ Throughput_{Mbps} = \frac{Bits}{10^6} $$
+                bps = data.get("bits_per_second", 0)
+                timeseries["throughput_mbps"].append(bps / 1_000_000)
+
+                # Capture Jitter and Loss (if available, usually UDP only)
+                timeseries["jitter_ms"].append(data.get("jitter_ms", 0))
+                timeseries["lost_percent"].append(data.get("lost_percent", 0))
+
+        return {
+            # original aggregate data
+            "throughput_mbps": summary.get("bits_per_second", 0) / 1_000_000,
+            "jitter_ms": summary.get("jitter_ms", 0),
+            "lost_percent": summary.get("lost_percent", 0),
+
+            # new granular data
+            "timeseries": timeseries
+        }
+
     except Exception as e:
         print(f"[ERROR] iperf failed: {e}")
         return None
-
 
 def toggle_airplane_mode():
     """Cycle airplane mode to force reattachment"""
@@ -810,34 +861,32 @@ def tests_run(test_id):
     row = db.get_test_case(test_id)
     if not row:
         return jsonify({"error": "Test not found"}), 404
-
     with open(row[0]) as f:
         test_case = yaml.safe_load(f)
-
     params = test_case.get("parameters", {})
     param_permutations = generate_permutations(params)
-
     results_summary = {
         "test_id": test_id,
         "timestamp": datetime.utcnow().isoformat(),
         "total_permutations": len(param_permutations),
         "permutations": []
     }
-
     for param_set in param_permutations:
+        start_time = time.time()
         result = execute_single_test(test_case, param_set, test_id)
+        execution_time = time.time() - start_time
+
         results_summary["permutations"].append({
             "parameters": result["parameters"],
             "status": result["status"],
             "execution_id": result["execution_id"],
+            "execution_time": round(execution_time, 2),
             "results_file": result.get("results_file")
         })
-
     return jsonify({
         "status": "OK",
         "summary": results_summary
     })
-
 
 @app.route("/tests/results", methods=["GET"])
 def tests_results():
@@ -910,56 +959,6 @@ def list_results():
     return jsonify({"files": files, "count": len(files)})
 
 
-@app.route("/results/sideload/<exec_id>/<run_id>/<metric_type>", methods=["GET"])
-def get_sideload_metric(exec_id, run_id, metric_type):
-    """Get specific sideload metric dump"""
-    metrics_dir = RESULTS_DIR / "sideload_dumps" / exec_id
-    metric_file = metrics_dir / f"run_{run_id}_{metric_type}.json"
-
-    if not metric_file.exists():
-        return jsonify({"error": "Metric file not found"}), 404
-
-    with open(metric_file) as f:
-        data = json.load(f)
-
-    return jsonify(data)
-
-
-@app.route("/results/sideload/<exec_id>/summary", methods=["GET"])
-def get_sideload_summary(exec_id):
-    """Get summary of all sideload metrics for execution"""
-    metrics_dir = RESULTS_DIR / "sideload_dumps" / exec_id
-
-    if not metrics_dir.exists():
-        return jsonify({"error": "Execution not found"}), 404
-
-    files = list(metrics_dir.glob("*.json"))
-
-    summary = {
-        "execution_id": exec_id,
-        "total_files": len(files),
-        "runs": {},
-    }
-
-    for f in files:
-        parts = f.stem.split('_')
-        if len(parts) >= 3:
-            run_id = parts[1]
-            metric_type = '_'.join(parts[2:])
-
-            if run_id not in summary["runs"]:
-                summary["runs"][run_id] = []
-
-            summary["runs"][run_id].append({
-                "metric_type": metric_type,
-                "filename": f.name,
-                "size_bytes": f.stat().st_size,
-                "modified": datetime.fromtimestamp(f.stat().st_mtime).isoformat()
-            })
-
-    return jsonify(summary)
-
-
 @app.route("/results/analyze/<exec_id>", methods=["GET"])
 def analyze_execution(exec_id):
     """Analyze execution with detailed breakdown"""
@@ -1013,6 +1012,111 @@ def analyze_execution(exec_id):
         analysis["permutations"].append(perm_analysis)
 
     return jsonify(analysis)
+
+
+
+@app.route("/plot/throughput/<exec_id>", methods=["GET"])
+def plot_throughput(exec_id):
+    """Get throughput timeseries for plotting"""
+    files = list(RESULTS_DIR.glob(f"exec_{exec_id}_*.json"))
+    if not files:
+        return jsonify({"error": "Execution not found"}), 404
+
+    with open(files[0]) as f:
+        data = json.load(f)
+
+    raw_data = data.get("raw_data", {})
+    runs = raw_data.get("runs", [])
+
+    if not runs:
+        return jsonify({"error": "No run data"}), 404
+
+    plot_data = {
+        "runs": []
+    }
+
+    for run in runs:
+        iperf = run.get("iperf", {})
+        plot_data["runs"].append({
+            "run_id": run.get("run_id"),
+            "throughput_mbps": iperf.get("throughput_mbps", 0),
+            "jitter_ms": iperf.get("jitter_ms", 0),
+            "loss_percent": iperf.get("lost_percent", 0)
+        })
+
+    return jsonify(plot_data)
+
+
+@app.route("/plot/cpu/<test_id>/<param_suffix>/<exec_id>/<run_id>", methods=["GET"])
+def plot_cpu(test_id, param_suffix, exec_id, run_id):
+    """Get CPU timeseries data for plotting"""
+    metrics_dir = RESULTS_DIR / "sideload_dumps" / test_id / param_suffix / exec_id
+    cpu_file = metrics_dir / f"run_{run_id}_cpu_core.json"
+
+    if not cpu_file.exists():
+        return jsonify({"error": "CPU data not found"}), 404
+
+    with open(cpu_file) as f:
+        data = json.load(f)
+
+    if "cpus" not in data:
+        return jsonify({"error": "Invalid CPU data"}), 400
+
+    plot_data = {
+        "timestamps": [],
+        "cpus": {}
+    }
+
+    for cpu_name, cpu_data in data["cpus"].items():
+        if "usage" in cpu_data and "timeseries" in cpu_data["usage"]:
+            ts = cpu_data["usage"]["timeseries"]
+            plot_data["timestamps"] = ts["timestamps"]
+            plot_data["cpus"][cpu_name] = ts["percent"]
+
+    return jsonify(plot_data)
+
+@app.route("/plot/power/<test_id>/<param_suffix>/<exec_id>/<run_id>", methods=["GET"])
+def plot_power(test_id, param_suffix, exec_id, run_id):
+    """Get Power consumption data for plotting"""
+    # 1. Locate the file in the archives
+    metrics_dir = RESULTS_DIR / "sideload_dumps" / test_id / param_suffix / exec_id
+    power_file = metrics_dir / f"run_{run_id}_power.json"
+
+    # 2. Verify existence
+    if not power_file.exists():
+        return jsonify({"error": "Power data not found"}), 404
+
+    # 3. Read the record
+    try:
+        with open(power_file) as f:
+            data = json.load(f)
+    except Exception as e:
+        return jsonify({"error": f"Corrupt power record: {str(e)}"}), 500
+
+    # 4. Return the raw truth (Client handles parsing of rapl_domains)
+    return jsonify(data)
+
+
+@app.route("/plot/memory/<test_id>/<param_suffix>/<exec_id>/<run_id>", methods=["GET"])
+def plot_memory(test_id, param_suffix, exec_id, run_id):
+    """Get Memory usage data for plotting"""
+    # 1. Locate the file
+    metrics_dir = RESULTS_DIR / "sideload_dumps" / test_id / param_suffix / exec_id
+    memory_file = metrics_dir / f"run_{run_id}_memory.json"
+
+    # 2. Verify existence
+    if not memory_file.exists():
+        return jsonify({"error": "Memory data not found"}), 404
+
+    # 3. Read the record
+    try:
+        with open(memory_file) as f:
+            data = json.load(f)
+    except Exception as e:
+        return jsonify({"error": f"Corrupt memory record: {str(e)}"}), 500
+
+    # 4. Return the raw truth (Client handles parsing of used_percent)
+    return jsonify(data)
 
 
 @app.route("/health", methods=["GET"])
