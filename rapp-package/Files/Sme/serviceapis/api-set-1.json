@@ -1,0 +1,156 @@
+{
+  "apiName": "gnb-test-api",
+  "description": "Test orchestration framework for O-RAN gNB - Performance testing and monitoring",
+  "aefProfiles": [
+    {
+      "aefId": "rapp-gnb-test as AEF",
+      "description": "gNB test orchestration endpoints for test execution, monitoring, and result analysis",
+      "versions": [
+        {
+          "apiVersion": "1.0.0",
+          "resources": [
+            {
+              "resourceName": "healthCheck",
+              "commType": "REQUEST_RESPONSE",
+              "uri": "/health",
+              "operations": ["GET"]
+            },
+            {
+              "resourceName": "deployInfo",
+              "commType": "REQUEST_RESPONSE",
+              "uri": "/nfo/deploy",
+              "operations": ["GET"]
+            },
+            {
+              "resourceName": "instanceStatus",
+              "commType": "REQUEST_RESPONSE",
+              "uri": "/nfo/status/{instance_id}",
+              "operations": ["GET"]
+            },
+            {
+              "resourceName": "testsList",
+              "commType": "REQUEST_RESPONSE",
+              "uri": "/tests/list",
+              "operations": ["GET"]
+            },
+            {
+              "resourceName": "testsLoad",
+              "commType": "REQUEST_RESPONSE",
+              "uri": "/tests/load",
+              "operations": ["POST"]
+            },
+            {
+              "resourceName": "testsResults",
+              "commType": "REQUEST_RESPONSE",
+              "uri": "/tests/results",
+              "operations": ["GET"]
+            },
+            {
+              "resourceName": "testRun",
+              "commType": "REQUEST_RESPONSE",
+              "uri": "/tests/run/{test_id}",
+              "operations": ["POST"]
+            },
+            {
+              "resourceName": "ueStatus",
+              "commType": "REQUEST_RESPONSE",
+              "uri": "/ue/status",
+              "operations": ["GET"]
+            },
+            {
+              "resourceName": "ueIperf",
+              "commType": "REQUEST_RESPONSE",
+              "uri": "/ue/iperf",
+              "operations": ["POST"]
+            },
+            {
+              "resourceName": "ueAirplaneToggle",
+              "commType": "REQUEST_RESPONSE",
+              "uri": "/ue/airplane/toggle",
+              "operations": ["POST"]
+            },
+            {
+              "resourceName": "ueAirplaneOn",
+              "commType": "REQUEST_RESPONSE",
+              "uri": "/ue/airplane/on",
+              "operations": ["POST"]
+            },
+            {
+              "resourceName": "ueAirplaneOff",
+              "commType": "REQUEST_RESPONSE",
+              "uri": "/ue/airplane/off",
+              "operations": ["POST"]
+            },
+            {
+              "resourceName": "sideloadList",
+              "commType": "REQUEST_RESPONSE",
+              "uri": "/sideload/list",
+              "operations": ["GET"]
+            },
+            {
+              "resourceName": "sideloadRegister",
+              "commType": "REQUEST_RESPONSE",
+              "uri": "/sideload/register",
+              "operations": ["POST"]
+            },
+            {
+              "resourceName": "sideloadReport",
+              "commType": "REQUEST_RESPONSE",
+              "uri": "/sideload/report/{instance_id}",
+              "operations": ["GET"]
+            },
+            {
+              "resourceName": "resultsList",
+              "commType": "REQUEST_RESPONSE",
+              "uri": "/results/list",
+              "operations": ["GET"]
+            },
+            {
+              "resourceName": "resultsAnalyze",
+              "commType": "REQUEST_RESPONSE",
+              "uri": "/results/analyze/{exec_id}",
+              "operations": ["GET"]
+            },
+            {
+              "resourceName": "resultsExport",
+              "commType": "REQUEST_RESPONSE",
+              "uri": "/results/export/{execution_id}",
+              "operations": ["GET"]
+            },
+            {
+              "resourceName": "plotCpu",
+              "commType": "REQUEST_RESPONSE",
+              "uri": "/plot/cpu/{test_id}/{param_suffix}/{exec_id}/{run_id}",
+              "operations": ["GET"]
+            },
+            {
+              "resourceName": "plotMemory",
+              "commType": "REQUEST_RESPONSE",
+              "uri": "/plot/memory/{test_id}/{param_suffix}/{exec_id}/{run_id}",
+              "operations": ["GET"]
+            },
+            {
+              "resourceName": "plotPower",
+              "commType": "REQUEST_RESPONSE",
+              "uri": "/plot/power/{test_id}/{param_suffix}/{exec_id}/{run_id}",
+              "operations": ["GET"]
+            },
+            {
+              "resourceName": "plotThroughput",
+              "commType": "REQUEST_RESPONSE",
+              "uri": "/plot/throughput/{exec_id}",
+              "operations": ["GET"]
+            }
+          ]
+        }
+      ],
+      "protocol": "HTTP_1_1",
+      "interfaceDescriptions": [
+        {
+          "ipv4Addr": "rapp-gnb-test.nonrtric.svc.cluster.local",
+          "port": "5000"
+        }
+      ]
+    }
+  ]
+}

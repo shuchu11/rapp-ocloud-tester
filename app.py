@@ -50,34 +50,16 @@ def check_ue_status():
     return False, None
 
 
-# def run_iperf_test(bandwidth_mbps=50, duration=10):
-#     """Execute iperf throughput test"""
-#     try:
-#         result = ue.run_iperf(bitrate=bandwidth_mbps, duration=duration)
-#         if not result or "end" not in result:
-#             return None
-#         return {
-#             "throughput_mbps": result["end"]["sum"]["bits_per_second"] / 1_000_000,
-#             "jitter_ms": result["end"]["sum"]["jitter_ms"],
-#             "lost_percent": result["end"]["sum"]["lost_percent"],
-#         }
-#     except Exception as e:
-#         print(f"[ERROR] iperf failed: {e}")
-#         return None
-
 def run_iperf_test(bandwidth_mbps=50, duration=10):
     """Execute iperf throughput test and capture detailed timeseries"""
     try:
         result = ue.run_iperf(bitrate=bandwidth_mbps, duration=duration)
 
-        # Check for valid JSON output structure
         if not result or "end" not in result:
             return None
 
-        # Extract the aggregate summary
         summary = result["end"]["sum"]
 
-        # Prepare storage for the continuous timeline
         timeseries = {
             "timestamps": [],
             "throughput_mbps": [],
@@ -85,37 +67,26 @@ def run_iperf_test(bandwidth_mbps=50, duration=10):
             "lost_percent": []
         }
 
-        # Parse the intervals to populate the timeseries
         if "intervals" in result:
             for interval in result["intervals"]:
-                # 'sum' contains the aggregate of all streams for this specific interval
                 data = interval.get("sum", {})
-
-                # Capture the time (using the 'end' of the interval as the timestamp)
                 timeseries["timestamps"].append(data.get("end", 0))
-
-                # Capture Throughput in Mbps
-                # $$ Throughput_{Mbps} = \frac{Bits}{10^6} $$
                 bps = data.get("bits_per_second", 0)
                 timeseries["throughput_mbps"].append(bps / 1_000_000)
-
-                # Capture Jitter and Loss (if available, usually UDP only)
                 timeseries["jitter_ms"].append(data.get("jitter_ms", 0))
                 timeseries["lost_percent"].append(data.get("lost_percent", 0))
 
         return {
-            # original aggregate data
             "throughput_mbps": summary.get("bits_per_second", 0) / 1_000_000,
             "jitter_ms": summary.get("jitter_ms", 0),
             "lost_percent": summary.get("lost_percent", 0),
-
-            # new granular data
             "timeseries": timeseries
         }
 
     except Exception as e:
         print(f"[ERROR] iperf failed: {e}")
         return None
+
 
 def toggle_airplane_mode():
     """Cycle airplane mode to force reattachment"""
@@ -177,12 +148,24 @@ def deploy_via_nfo(config):
     }
 
 
-def generate_permutations(params):
-    """Generate all permutations from parameter arrays"""
+def generate_permutations(nf_list):
+    """Generate parameter permutations considering multi-NF structure"""
+    all_params = {}
+
+    for nf in nf_list:
+        if "parameters" in nf:
+            for key, value in nf["parameters"].items():
+                if key in all_params:
+                    print(f"[WARN] Parameter '{key}' defined in multiple NFs")
+                all_params[key] = value
+
+    if not all_params:
+        return [{}]
+
     keys = []
     value_lists = []
 
-    for key, value in params.items():
+    for key, value in all_params.items():
         keys.append(key)
         if isinstance(value, list):
             value_lists.append(value)
@@ -217,7 +200,7 @@ def fetch_sideload_metrics(sideload_url, duration, test_id, exec_id, run_idx, pa
     def fetch_cpu_thread():
         try:
             resp = requests.post(
-                f"{sideload_url}/perf/thread_cpu_monitor",
+                f"{sideload_url}/process/threads",
                 json={"duration": duration, "pgrep": "softmodem"},
                 timeout=duration + 10,
             )
@@ -423,11 +406,14 @@ def fetch_sideload_metrics(sideload_url, duration, test_id, exec_id, run_idx, pa
 
 def collect_test_runs(test_case, param_set, exec_id, test_id):
     """Collect data from all test runs"""
-    sideload_instance_id = test_case.get("target", {}).get("sideloadInstanceId")
-    ptp_interface = test_case.get("target", {}).get("ptpInterface")
-    iperf_duration = test_case.get("execution", {}).get("iperfDuration", 10)
+    target = test_case.get("target", {})
+    execution = test_case.get("execution", {})
+
+    sideload_instance_id = target.get("sideloadInstanceId")
+    ptp_interface = target.get("ptpInterface")
+    iperf_duration = execution.get("iperfDuration", 10)
     monitor_duration = iperf_duration + 2
-    runs_per_case = test_case.get("execution", {}).get("runsPerCase", 3)
+    runs_per_case = execution.get("runsPerCase", 3)
 
     sideload_url = None
     sideload_metadata = None
@@ -555,48 +541,103 @@ def compute_averages(runs):
     return avg_results
 
 
-def execute_single_test(test_case, param_set, test_id):
-    """Execute single test run - collect all data"""
-
+def build_helm_values(nf_config, param_set, image_config):
+    """Build Helm values for a single NF deployment"""
+    # Start with baseline resources
+    baseline_resources = nf_config.get("baseline", {}).copy()
+    
+    # Update baseline resources with parameter values if they exist
+    if nf_config.get("parameters"):
+        for key in nf_config["parameters"].keys():
+            if key in param_set:
+                baseline_resources[key] = param_set[key]
+    
     helm_values = {
-        "config": test_case.get("config", {}),
+        "config": {},
         "resources": {
             "define": True,
-            "limits": {"nf": test_case.get("baseline", {})},
-            "requests": {"nf": test_case.get("baseline", {})},
+            "limits": {"nf": baseline_resources},
+            "requests": {"nf": baseline_resources.copy()},
         },
     }
 
-    if test_case.get("extra"):
-        helm_values["config"].update(test_case["extra"])
-
-    helm_values["config"].update(param_set)
-
-    nfo_config = {
-        "name": f"test-{test_id}-{int(time.time())}",
-        "description": test_case.get("description", ""),
-        "profile_type": "kubernetes",
-        "artifact_repo_url": test_case["target"]["artifactRepoUrl"],
-        "artifact_name": test_case["target"]["artifactName"],
-        "artifact_repo_branch": test_case["target"]["branch"],
-        "target_cluster": test_case["target"]["cluster"],
-        "values": helm_values,
-    }
-
-    deployment = deploy_via_nfo(nfo_config)
-
-    if not deployment.get("instance_id"):
-        return {
-            "error": "Deployment failed",
-            "parameters": param_set,
-            "deployment_response": deployment
+    # NF-level image overrides top-level image
+    # Translate to nfimage structure expected by Helm charts
+    image_source = nf_config.get("image") or image_config
+    if image_source:
+        helm_values["nfimage"] = {
+            "repository": image_source.get("repository", ""),
+            "version": image_source.get("version", "latest")
         }
+
+    if nf_config.get("extra"):
+        helm_values["config"].update(nf_config["extra"])
+
+    if nf_config.get("parameters"):
+        for key in nf_config["parameters"].keys():
+            if key in param_set:
+                helm_values["config"][key] = param_set[key]
+
+    return helm_values
+
+
+def execute_single_test(test_case, param_set, test_id):
+    """Execute single test run with multi-NF deployment"""
+
+    start_time = time.time()
+    nf_list = test_case.get("nf", [])
+    if not nf_list:
+        return {"error": "No NF definitions in test case", "parameters": param_set}
+
+    target = test_case.get("target", {})
+    image_config = test_case.get("image")
+
+    deployments = []
+    instance_ids = []
+
+    for nf_config in nf_list:
+        helm_values = build_helm_values(nf_config, param_set, image_config)
+
+        nfo_config = {
+            "name": f"test-{test_id}-{nf_config['artifactName']}-{int(time.time())}",
+            "description": test_case.get("description", ""),
+            "profile_type": "kubernetes",
+            "artifact_repo_url": nf_config["artifactRepoUrl"],
+            "artifact_name": nf_config["artifactName"],
+            "artifact_repo_branch": nf_config.get("branch", "main"),
+            "target_cluster": target.get("cluster"),
+            "values": helm_values,
+        }
+
+        try:
+            deployment = deploy_via_nfo(nfo_config)
+            deployments.append({
+                "nf_name": nf_config["artifactName"],
+                "deployment": deployment
+            })
+            instance_ids.append(deployment["instance_id"])
+            print(f"[SUCCESS] Deployed {nf_config['artifactName']}: {deployment['instance_id']}")
+        except Exception as e:
+            print(f"[ERROR] Failed to deploy {nf_config['artifactName']}: {e}")
+            for prev_deployment in deployments:
+                terminate_gnb(prev_deployment["deployment"]["instance_id"])
+            return {
+                "error": f"Deployment failed for {nf_config['artifactName']}: {e}",
+                "parameters": param_set,
+                "status": "deployment_failed",
+                "execution_id": None,
+                "execution_time": 0,
+                "partial_deployments": deployments
+            }
+
+    primary_instance_id = instance_ids[0] if instance_ids else None
+    oru_vendor = target.get("oduUrn", "unknown")
 
     exec_id = db.record_test_start(
         test_id=test_id,
-        gnb_instance_id=deployment["instance_id"],
-        sideload_instance_id=test_case.get("target", {}).get("sideloadInstanceId"),
-        oru_vendor=test_case.get("target", {}).get("oduName", "unknown"),
+        gnb_instance_id=primary_instance_id,
+        sideload_instance_id=target.get("sideloadInstanceId"),
+        oru_vendor=oru_vendor,
     )
 
     stabilization_time = test_case.get("execution", {}).get("stabilizationTime", 30)
@@ -625,26 +666,34 @@ def execute_single_test(test_case, param_set, test_id):
         status = "failed"
         db.update_test_status(exec_id, status)
 
-    terminate_gnb(deployment["instance_id"])
+    for instance_id in instance_ids:
+        terminate_gnb(instance_id)
+
+    execution_time = time.time() - start_time
 
     execution_data = {
         "test_id": test_id,
         "execution_id": exec_id,
         "parameters": param_set,
         "status": status,
-        "deployment": deployment,
+        "deployments": deployments,
         "timestamp": datetime.utcnow().isoformat(),
+        "execution_time": round(execution_time, 2),
         "raw_data": run_results
     }
 
     filepath = save_execution_results(test_id, exec_id, param_set, execution_data)
 
+    print(f"[DEBUG] 30s between test")
+    time.sleep(30)
+
     return {
         "parameters": param_set,
         "status": status,
         "execution_id": exec_id,
-        "deployment": deployment,
+        "deployments": deployments,
         "results_file": filepath,
+        "execution_time": round(execution_time, 2),
         "raw_data": run_results
     }
 
@@ -652,7 +701,8 @@ def execute_single_test(test_case, param_set, test_id):
 # ========== NFO ENDPOINTS ==========
 
 @app.route("/nfo/deploy", methods=["POST"])
-def nfo_deploy():
+@app.route("/nfo/<version>/deploy", methods=["POST"])
+def nfo_deploy(version=None):
     """Deploy via NFO"""
     config = request.json
     result = deploy_via_nfo(config)
@@ -660,7 +710,8 @@ def nfo_deploy():
 
 
 @app.route("/nfo/status/<instance_id>", methods=["GET"])
-def nfo_status(instance_id):
+@app.route("/nfo/<version>/status/<instance_id>", methods=["GET"])
+def nfo_status(instance_id, version=None):
     """Get deployment status"""
     resp = requests.get(f"{NFO_BASE}/deployments/{instance_id}/")
     resp.raise_for_status()
@@ -670,7 +721,8 @@ def nfo_status(instance_id):
 # ========== UE ENDPOINTS ==========
 
 @app.route("/ue/status", methods=["GET"])
-def ue_status():
+@app.route("/ue/<version>/status", methods=["GET"])
+def ue_status(version=None):
     try:
         return jsonify({
             "attached": ue.is_attached(),
@@ -691,13 +743,14 @@ def ue_status():
 
 
 @app.route("/ue/iperf", methods=["POST"])
-def ue_iperf():
+@app.route("/ue/<version>/iperf", methods=["POST"])
+def ue_iperf(version=None):
     try:
         data = request.json or {}
         result = ue.run_iperf(
             bitrate=data.get("bitrate", 10),
             duration=data.get("duration", 20),
-            target='192.168.8.103'
+            target='10.45.100.1'
         )
         return jsonify(result)
     finally:
@@ -705,7 +758,8 @@ def ue_iperf():
 
 
 @app.route('/ue/airplane/on', methods=['POST'])
-def ue_airplane_on():
+@app.route('/ue/<version>/airplane/on', methods=['POST'])
+def ue_airplane_on(version=None):
     """Enable airplane mode"""
     try:
         success = ue.enable_airplane_mode()
@@ -715,7 +769,8 @@ def ue_airplane_on():
 
 
 @app.route('/ue/airplane/off', methods=['POST'])
-def ue_airplane_off():
+@app.route('/ue/<version>/airplane/off', methods=['POST'])
+def ue_airplane_off(version=None):
     """Disable airplane mode"""
     try:
         success = ue.disable_airplane_mode()
@@ -725,7 +780,8 @@ def ue_airplane_off():
 
 
 @app.route("/ue/airplane/toggle", methods=["POST"])
-def ue_airplane_toggle():
+@app.route("/ue/<version>/airplane/toggle", methods=["POST"])
+def ue_airplane_toggle(version=None):
     """Toggle airplane mode"""
     try:
         current = ue.is_airplane_mode()
@@ -738,7 +794,8 @@ def ue_airplane_toggle():
 # ========== SIDELOAD ENDPOINTS ==========
 
 @app.route("/sideload/register", methods=["POST"])
-def sideload_register():
+@app.route("/sideload/<version>/register", methods=["POST"])
+def sideload_register(version=None):
     """Register sideload - validate all IPs, use first working"""
     data = request.json
 
@@ -791,13 +848,15 @@ def sideload_register():
 
 
 @app.route("/sideload/list", methods=["GET"])
-def sideload_list():
+@app.route("/sideload/<version>/list", methods=["GET"])
+def sideload_list(version=None):
     """List all registered sideloads"""
     return jsonify(db.get_all_sideloads())
 
 
 @app.route("/sideload/report/<instance_id>", methods=["GET"])
-def sideload_report(instance_id):
+@app.route("/sideload/<version>/report/<instance_id>", methods=["GET"])
+def sideload_report(instance_id, version=None):
     """Get RT report from sideload"""
     sideload_info = db.get_sideload_ip(instance_id)
     if not sideload_info:
@@ -820,10 +879,130 @@ def sideload_report(instance_id):
         return jsonify({"error": f"failed to get metrics: {str(e)}"}), 500
 
 
+# ========== New sideloader endpoint
+
+@app.route("/sideload/measure/thread_cpu", methods=["POST"])
+def sideload_measure_thread_cpu():
+    """Proxy: Thread CPU usage from sideloader"""
+    data = request.json or {}
+    instance_id = data.get("instance_id")
+    if not instance_id:
+        return jsonify({"error": "instance_id required"}), 400
+
+    sideload_info = db.get_sideload_ip(instance_id)
+    if not sideload_info:
+        return jsonify({"error": "sideload not found"}), 404
+
+    sideload_url = f"http://{sideload_info['ip_address']}:{sideload_info['port']}"
+
+    try:
+        resp = requests.post(
+            f"{sideload_url}/process/threads",
+            json={
+                "duration": data.get("duration", 10),
+                "pgrep": data.get("pgrep", "softmodem"),
+                "include_timeseries": data.get("include_timeseries", True),
+            },
+            timeout=data.get("duration", 10) + 10,
+        )
+        return jsonify(resp.json()), resp.status_code
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
+@app.route("/sideload/measure/cpu", methods=["POST"])
+def sideload_measure_cpu():
+    """Proxy: Per-core CPU usage from sideloader"""
+    data = request.json or {}
+    instance_id = data.get("instance_id")
+    if not instance_id:
+        return jsonify({"error": "instance_id required"}), 400
+
+    sideload_info = db.get_sideload_ip(instance_id)
+    if not sideload_info:
+        return jsonify({"error": "sideload not found"}), 404
+
+    sideload_url = f"http://{sideload_info['ip_address']}:{sideload_info['port']}"
+
+    try:
+        resp = requests.post(
+            f"{sideload_url}/cpu/monitor",
+            json={
+                "duration": data.get("duration", 10),
+                "include_timeseries": data.get("include_timeseries", True),
+            },
+            timeout=data.get("duration", 10) + 10,
+        )
+        return jsonify(resp.json()), resp.status_code
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
+@app.route("/sideload/measure/power", methods=["POST"])
+def sideload_measure_power():
+    """Proxy: Power consumption (RAPL + iDRAC) from sideloader"""
+    data = request.json or {}
+    instance_id = data.get("instance_id")
+    if not instance_id:
+        return jsonify({"error": "instance_id required"}), 400
+
+    sideload_info = db.get_sideload_ip(instance_id)
+    if not sideload_info:
+        return jsonify({"error": "sideload not found"}), 404
+
+    sideload_url = f"http://{sideload_info['ip_address']}:{sideload_info['port']}"
+
+    try:
+        resp = requests.post(
+            f"{sideload_url}/power/monitor",
+            json={
+                "duration": data.get("duration", 10),
+                "include_timeseries": data.get("include_timeseries", True),
+                "idrac_ip": data.get("idrac_ip"),
+                "idrac_user": data.get("idrac_user", "root"),
+                "idrac_pass": data.get("idrac_pass"),
+            },
+            timeout=data.get("duration", 10) + 10,
+        )
+        return jsonify(resp.json()), resp.status_code
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
+@app.route("/sideload/measure/ptp", methods=["POST"])
+def sideload_measure_ptp():
+    """Proxy: PTP synchronization status from sideloader"""
+    data = request.json or {}
+    instance_id = data.get("instance_id")
+    if not instance_id:
+        return jsonify({"error": "instance_id required"}), 400
+
+    sideload_info = db.get_sideload_ip(instance_id)
+    if not sideload_info:
+        return jsonify({"error": "sideload not found"}), 404
+
+    sideload_url = f"http://{sideload_info['ip_address']}:{sideload_info['port']}"
+
+    try:
+        resp = requests.post(
+            f"{sideload_url}/ptp/monitor",
+            json={
+                "duration": data.get("duration", 10),
+                "interface": data.get("interface", "eth0"),
+                "include_timeseries": data.get("include_timeseries", True),
+            },
+            timeout=data.get("duration", 10) + 10,
+        )
+        return jsonify(resp.json()), resp.status_code
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
 # ========== TEST EXECUTION ==========
 
 @app.route("/tests/load", methods=["POST"])
-def tests_load():
+@app.route("/tests/<version>/load", methods=["POST"])
+def tests_load(version=None):
     """Load test cases from YAML files"""
     loaded = []
 
@@ -834,12 +1013,20 @@ def tests_load():
                 with open(filepath) as fh:
                     test = yaml.safe_load(fh)
 
+                target = test.get("target", {})
+                nf_list = test.get("nf", [])
+
+                all_params = {}
+                for nf in nf_list:
+                    if "parameters" in nf:
+                        all_params.update(nf["parameters"])
+
                 db.register_test_case(
                     test["testId"],
                     test["testType"],
                     filepath,
-                    test.get("target", {}).get("oduUrn"),
-                    json.dumps(test.get("parameters", {})),
+                    target.get("oduUrn"),
+                    json.dumps(all_params),
                 )
                 loaded.append(test["testId"])
 
@@ -847,7 +1034,8 @@ def tests_load():
 
 
 @app.route("/tests/list", methods=["GET"])
-def tests_list():
+@app.route("/tests/<version>/list", methods=["GET"])
+def tests_list(version=None):
     """List all test cases"""
     rows = db.list_test_cases()
     return jsonify({
@@ -856,40 +1044,50 @@ def tests_list():
 
 
 @app.route("/tests/run/<test_id>", methods=["POST"])
-def tests_run(test_id):
-    """Execute test case - dump all data to JSON per permutation"""
+@app.route("/tests/<version>/run/<test_id>", methods=["POST"])
+def tests_run(test_id, version=None):
+    """Execute test case with multi-NF deployment"""
     row = db.get_test_case(test_id)
     if not row:
         return jsonify({"error": "Test not found"}), 404
+
     with open(row[0]) as f:
         test_case = yaml.safe_load(f)
-    params = test_case.get("parameters", {})
-    param_permutations = generate_permutations(params)
+
+    nf_list = test_case.get("nf", [])
+    param_permutations = generate_permutations(nf_list)
+
     results_summary = {
         "test_id": test_id,
         "timestamp": datetime.utcnow().isoformat(),
         "total_permutations": len(param_permutations),
         "permutations": []
     }
+
     for param_set in param_permutations:
-        start_time = time.time()
         result = execute_single_test(test_case, param_set, test_id)
-        execution_time = time.time() - start_time
+
+        # Breathe Time between deployment
+        time.sleep(3)
 
         results_summary["permutations"].append({
-            "parameters": result["parameters"],
-            "status": result["status"],
-            "execution_id": result["execution_id"],
-            "execution_time": round(execution_time, 2),
-            "results_file": result.get("results_file")
+            "parameters": result.get("parameters", param_set),
+            "status": result.get("status", "unknown"),
+            "execution_id": result.get("execution_id"),
+            "execution_time": result.get("execution_time", 0),
+            "results_file": result.get("results_file"),
+            "error": result.get("error")
         })
+
     return jsonify({
         "status": "OK",
         "summary": results_summary
     })
 
+
 @app.route("/tests/results", methods=["GET"])
-def tests_results():
+@app.route("/tests/<version>/results", methods=["GET"])
+def tests_results(version=None):
     """Query test execution results"""
     limit = request.args.get("limit", 50, type=int)
 
@@ -933,7 +1131,8 @@ def tests_results():
 # ========== RESULTS MANAGEMENT ==========
 
 @app.route("/results/export/<execution_id>", methods=["GET"])
-def export_results(execution_id):
+@app.route("/results/<version>/export/<execution_id>", methods=["GET"])
+def export_results(execution_id, version=None):
     """Export raw JSON results for processing"""
     files = list(RESULTS_DIR.glob(f"exec_{execution_id}_*.json"))
     if not files:
@@ -946,7 +1145,8 @@ def export_results(execution_id):
 
 
 @app.route("/results/list", methods=["GET"])
-def list_results():
+@app.route("/results/<version>/list", methods=["GET"])
+def list_results(version=None):
     """List all saved result files"""
     files = []
     for f in RESULTS_DIR.glob("exec_*.json"):
@@ -960,7 +1160,8 @@ def list_results():
 
 
 @app.route("/results/analyze/<exec_id>", methods=["GET"])
-def analyze_execution(exec_id):
+@app.route("/results/<version>/analyze/<exec_id>", methods=["GET"])
+def analyze_execution(exec_id, version=None):
     """Analyze execution with detailed breakdown"""
     files = list(RESULTS_DIR.glob(f"exec_{exec_id}_*.json"))
     if not files:
@@ -1014,9 +1215,9 @@ def analyze_execution(exec_id):
     return jsonify(analysis)
 
 
-
 @app.route("/plot/throughput/<exec_id>", methods=["GET"])
-def plot_throughput(exec_id):
+@app.route("/plot/<version>/throughput/<exec_id>", methods=["GET"])
+def plot_throughput(exec_id, version=None):
     """Get throughput timeseries for plotting"""
     files = list(RESULTS_DIR.glob(f"exec_{exec_id}_*.json"))
     if not files:
@@ -1048,7 +1249,8 @@ def plot_throughput(exec_id):
 
 
 @app.route("/plot/cpu/<test_id>/<param_suffix>/<exec_id>/<run_id>", methods=["GET"])
-def plot_cpu(test_id, param_suffix, exec_id, run_id):
+@app.route("/plot/<version>/cpu/<test_id>/<param_suffix>/<exec_id>/<run_id>", methods=["GET"])
+def plot_cpu(test_id, param_suffix, exec_id, run_id, version=None):
     """Get CPU timeseries data for plotting"""
     metrics_dir = RESULTS_DIR / "sideload_dumps" / test_id / param_suffix / exec_id
     cpu_file = metrics_dir / f"run_{run_id}_cpu_core.json"
@@ -1075,47 +1277,42 @@ def plot_cpu(test_id, param_suffix, exec_id, run_id):
 
     return jsonify(plot_data)
 
+
 @app.route("/plot/power/<test_id>/<param_suffix>/<exec_id>/<run_id>", methods=["GET"])
-def plot_power(test_id, param_suffix, exec_id, run_id):
+@app.route("/plot/<version>/power/<test_id>/<param_suffix>/<exec_id>/<run_id>", methods=["GET"])
+def plot_power(test_id, param_suffix, exec_id, run_id, version=None):
     """Get Power consumption data for plotting"""
-    # 1. Locate the file in the archives
     metrics_dir = RESULTS_DIR / "sideload_dumps" / test_id / param_suffix / exec_id
     power_file = metrics_dir / f"run_{run_id}_power.json"
 
-    # 2. Verify existence
     if not power_file.exists():
         return jsonify({"error": "Power data not found"}), 404
 
-    # 3. Read the record
     try:
         with open(power_file) as f:
             data = json.load(f)
     except Exception as e:
         return jsonify({"error": f"Corrupt power record: {str(e)}"}), 500
 
-    # 4. Return the raw truth (Client handles parsing of rapl_domains)
     return jsonify(data)
 
 
 @app.route("/plot/memory/<test_id>/<param_suffix>/<exec_id>/<run_id>", methods=["GET"])
-def plot_memory(test_id, param_suffix, exec_id, run_id):
+@app.route("/plot/<version>/memory/<test_id>/<param_suffix>/<exec_id>/<run_id>", methods=["GET"])
+def plot_memory(test_id, param_suffix, exec_id, run_id, version=None):
     """Get Memory usage data for plotting"""
-    # 1. Locate the file
     metrics_dir = RESULTS_DIR / "sideload_dumps" / test_id / param_suffix / exec_id
     memory_file = metrics_dir / f"run_{run_id}_memory.json"
 
-    # 2. Verify existence
     if not memory_file.exists():
         return jsonify({"error": "Memory data not found"}), 404
 
-    # 3. Read the record
     try:
         with open(memory_file) as f:
             data = json.load(f)
     except Exception as e:
         return jsonify({"error": f"Corrupt memory record: {str(e)}"}), 500
 
-    # 4. Return the raw truth (Client handles parsing of used_percent)
     return jsonify(data)
 
 
@@ -1125,5 +1322,26 @@ def health():
     return jsonify({"status": "healthy"}), 200
 
 
+# ========== DME ENDPOINTS ==========
+
+@app.route("/dme/health", methods=["GET"])
+def dme_health():
+    """Minimal DME health endpoint for integration checks"""
+    return jsonify({"status": "ok"}), 200
+
+
+@app.route("/dme/info", methods=["GET"])
+def dme_info():
+    """Provide basic DME/rApp metadata for discovery"""
+    return jsonify({
+        "name": os.getenv("RAPP_NAME", "rapp-gnb-test"),
+        "version": os.getenv("RAPP_VERSION", "1.0.0"),
+        "endpoints": [
+            {"path": "/health", "method": "GET"},
+            {"path": "/dme/health", "method": "GET"}
+        ]
+    }), 200
+
+
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=5000, debug=True)
+    app.run(host="0.0.0.0", port=5000, threaded=True, debug=True)

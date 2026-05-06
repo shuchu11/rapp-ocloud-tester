@@ -1,37 +1,36 @@
-testId: nfapi-liteon-joule-cpu-bandwidth
+testId: f1-pegatron-joule-cpu-bandwidth
 testType: BANDWIDTH_SCALING
-description: "NFAPI split test - LiteON O-RU - Joule - PNF/VNF"
+description: "F1 split test - Pegatron O-RU - Joule - CU/DU"
 target:
-    oduUrn: urn:o-ran:gnb:joule-liteon
-    cellUrn: urn:o-ran:cell:joule-liteon
+    oduUrn: urn:o-ran:gnb:joule-pegatron
+    cellUrn: urn:o-ran:cell:joule-pegatron
     sideloadInstanceId: 139d2f51-b3c2-4a94-a6a3-401464537f23
     cluster: cc1397ba-b1c4-4a3e-bc8d-6af58ef53818
 nf:
-  - artifactName: oai-vnf
+  - artifactName: oai-cu
     artifactRepoUrl: https://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@github.com/motangpuar/ocloud-helm-templates.git
-    branch: starlingx/liteon
+    branch: starlingx/pegatron
     image:
-      repository: bmw.ece.ntust.edu.tw/infidel/oai-gnb
-      version: nfapi
-    baseline:
-      cpu: 4
-      memory: 8Gi
+      repository: oaisoftwarealliance/oai-gnb-fhi72
+      version: 2026.w04
     extra:
       amfhost: 192.168.8.103
-  - artifactName: oai-pnf
+  - artifactName: oai-du-fhi-72
     artifactRepoUrl: https://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@github.com/motangpuar/ocloud-helm-templates.git
-    branch: starlingx/liteon
+    branch: starlingx/pegatron
     image:
-      repository: bmw.ece.ntust.edu.tw/infidel/oai-gnb
-      version: nfapi
+      repository: oaisoftwarealliance/oai-gnb-fhi72
+      version: 2026.w04
     parameters:
-        wr_isolcpus: [8,10]
+        wr_isolcpus: [8,14]
         iperf_bandwidth_mbps: [100,400,700]
     baseline:
-      cpu: 0
-      wr_isolcpus: 8
+      wr_isolcpus: 10
       memory: 16Gi
       hugepages: 10Gi
+    extra:
+      ruCPlaneMacAdd: 48:21:0b:4b:dc:41
+      ruUPlaneMacAdd: 48:21:0b:4b:dc:41
 execution:
     runsPerCase: 1
     stabilizationTime: 30

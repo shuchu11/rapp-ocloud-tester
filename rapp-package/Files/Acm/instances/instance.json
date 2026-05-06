@@ -1,0 +1,32 @@
+{
+  "name": "rapp-gnb-test-instance",
+  "version": "1.0.0",
+  "compositionId": "DO_NOT_CHANGE_THIS_COMPOSITION_ID",
+  "elements": {
+    "294837d5-43bb-48b8-b650-9fb75f79247f": {
+      "id": "294837d5-43bb-48b8-b650-9fb75f79247f",
+      "definition": {
+        "name": "onap.policy.clamp.ac.element.rapp-gnb-test",
+        "version": "1.0.0"
+      },
+      "properties": {
+        "chart": {
+          "chartId": {
+            "name": "rapp-gnb-test",
+            "version": "1.0.0"
+          },
+          "repository": {
+            "repoName": "local",
+            "address": "http://chartmuseum.chartmuseum:8080"
+          },
+          "releaseName": "rapp-gnb-test",
+          "namespace": "nonrtric",
+          "overrideParams": {
+            "environment.appId": "DO_NOT_CHANGE_THIS_RAPP_INSTANCE_ID",
+            "environment.smeDiscoveryEndpoint": "DO_NOT_CHANGE_THIS_SME_DISCOVERY_ENDPOINT"
+          }
+        }
+      }
+    }
+  }
+}

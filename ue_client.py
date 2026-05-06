@@ -116,11 +116,11 @@ class UEClient:
 
         return result
 
-    def run_iperf(self, bitrate=10, duration=20, target='192.168.8.103'):
+    def run_iperf(self, bitrate=10, duration=20, target='10.45.100.1'):
         """Run iperf3 downlink test"""
         print(f"[DEBUG] iperf target: {target} : duration: {duration}")
         #cmd = f'/data/local/tmp/iperf3 -c {target} -u -b {bitrate}M -t {duration} -R -i 0 -l 1300 -Z -J'
-        cmd = f'/data/local/tmp/iperf3 -c {target} -u -b {bitrate}M -t {duration} -R -l 1300 -Z -J'
+        cmd = f'/data/local/tmp/iperf3 -c {target} -u -b {bitrate}M -t {duration} -R -l 1300 -J'
         out, code = self._run_adb(cmd, timeout=duration+10)
 
         print("-"*30)

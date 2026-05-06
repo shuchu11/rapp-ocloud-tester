@@ -1,28 +1,41 @@
 testId: nfapi-pegatron-kepler-cpu-bandwidth
 testType: BANDWIDTH_SCALING
-description: "Bandwidth baseline test with 100Mbps iperf load - Pegatron O-RU - Max CPU"
-image:
-  repository: bmw.ece.ntust.edu.tw/infidel/oai-gnb
-  version: nfapi
+description: "NFAPI split test - Pegatron O-RU - Kepler - PNF/VNF"
 target:
-    oduUrn: urn:o-ran:gnb:joule-pegatron
-    cellUrn: urn:o-ran:cell:joule-pegatron
+    oduUrn: urn:o-ran:gnb:kepler-pegatron
+    cellUrn: urn:o-ran:cell:kepler-pegatron
     sideloadInstanceId: e336a31f-ed20-4b5e-a850-17f0bcc1ca29
     cluster: 6f2fe8ff-b10f-4a27-bef4-b7e3e2432a94
-    branch: openshift/pegatron
+nf:
+  - artifactName: oai-pnf
     artifactRepoUrl: https://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@github.com/motangpuar/ocloud-helm-templates.git
-    artifactName: oai-pnf
+    branch: openshift/pegatron
+    image:
+      repository: bmw.ece.ntust.edu.tw/infidel/oai-gnb
+      version: nfapi
+    parameters:
+        cpu: [8,10]
+        iperf_bandwidth_mbps: [100,400,700]
+    baseline:
+      cpu: 10
+      memory: 16Gi
+      hugepages: 10Gi
+    extra:
+      ruCPlaneMacAdd: 48:21:0b:4b:dc:41
+      ruUPlaneMacAdd: 48:21:0b:4b:dc:41
+  - artifactName: oai-vnf
+    artifactRepoUrl: https://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@github.com/motangpuar/ocloud-helm-templates.git
+    branch: openshift/pegatron
+    image:
+      repository: bmw.ece.ntust.edu.tw/infidel/oai-gnb
+      version: nfapi
+    baseline:
+      cpu: 4
+      memory: 8Gi
+      hugepages: 0
+    extra:
+      amfhost: 192.168.8.103
 execution:
     runsPerCase: 1
     stabilizationTime: 30
     iperfDuration: 60
-parameters:
-    cpus: [6,12]
-    iperf_bandwidth_mbps: [100,400,700]
-baseline:
-  cpus: 10
-  memory: 16Gi
-  hugepages: 10Gi
-extra:
-  amfhost: 192.168.8.82
-

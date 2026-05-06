@@ -1,0 +1,13 @@
+venv/
+__pycache__/
+*.pyc
+.git/
+.gitignore
+.env
+rapp.db
+logs/
+test_results/
+*.tgz
+Makefile
+Readme.md
+chart/

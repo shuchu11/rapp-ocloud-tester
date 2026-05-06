@@ -1,0 +1,16 @@
+metadata:
+  application_name: rapp-gnb-test
+  application_provider: NTUST gNB Test Team
+  release_date_time: 2026-02-03T00:00:00+00:00
+  entry_definition_type: asd
+
+Source: asd.mf
+Source: Artifacts/Deployment/HELM/rapp-gnb-test-1.0.0.tgz
+Source: Definitions/asd.yaml
+Source: Definitions/asd_types.yaml
+Source: TOSCA-Metadata/TOSCA.meta
+Source: Files/Acm/definition/compositions.json
+Source: Files/Acm/instances/instance.json
+Source: Files/Sme/providers/provider-function-1.json
+Source: Files/Sme/serviceapis/api-set-1.json
+Source: Files/Sme/invokers/invoker-app1.json

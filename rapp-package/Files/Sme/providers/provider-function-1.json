@@ -1,0 +1,20 @@
+{
+  "apiProvDomInfo": "Provider domain",
+  "apiProvFuncs": [
+    {
+      "apiProvFuncInfo": "rapp-gnb-test as APF",
+      "apiProvFuncRole": "APF",
+      "regInfo": {
+        "apiProvPubKey": "NOT USED here"
+      }
+    },
+    {
+      "apiProvFuncInfo": "rapp-gnb-test as AEF",
+      "apiProvFuncRole": "AEF",
+      "regInfo": {
+        "apiProvPubKey": "NOT USED here"
+      }
+    }
+  ],
+  "regSec": "plain"
+}

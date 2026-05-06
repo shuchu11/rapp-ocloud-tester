@@ -1,0 +1,45 @@
+replicaCount: 1
+
+image:
+  repository: bmw.ece.ntust.edu.tw/shuchu11/rapp
+  tag: "v2"
+  pullPolicy: Always
+
+service:
+  type: NodePort
+  port: 5000
+  nodePort: 32500
+
+resources:
+  limits:
+    cpu: 1000m
+    memory: 1Gi
+  requests:
+    cpu: 500m
+    memory: 512Mi
+
+env:
+  NFO_BASE_URL: "http://192.168.8.35:8080/api/o2dms/v2"
+  RAPP_URL: "http://192.168.8.35:5000"
+  INFLUXDB_URL: "http://192.168.8.69:30138"
+  INFLUXDB_TOKEN: "OXBQioD0laQNV9ouB3wxA8MGnhgzR8qbtaWC73ONPZBZdZ1Yn3y94IOOD8ka53LsDxl9rXxrO99COhH1xB5sUg=="
+  INFLUXDB_ORG: "23d50abdce61b0f6"
+  INFLUXDB_BUCKET: "cicd-test-results"
+  ADB_MACHINE_SSH_HOST: "140.118.162.81"
+  ADB_MACHINE_SSH_USER: "sshuser"
+  ADB_MACHINE_SSH_PASSWORD: "bmwlab"
+
+# rApp-specific environment variables (injected by ACM)
+environment:
+  appId: "default-app-id"
+  smeDiscoveryEndpoint: ""
+
+persistence:
+  enabled: true
+  storageClass: ""
+  size: 10Gi
+  mountPath: /app/test_results
+
+nodeSelector: {}
+tolerations: []
+affinity: {}

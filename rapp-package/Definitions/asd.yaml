@@ -1,0 +1,22 @@
+tosca_definitions_version: tosca_simple_yaml_1_2
+
+description: gNB Test Orchestrator rApp
+
+imports:
+  - asd_types.yaml
+
+topology_template:
+  node_templates:
+    applicationServiceDescriptor:
+      type: tosca.nodes.asd
+      description: "rapp-gnb-test"
+      properties:
+        descriptor_id: cd87215a-6fab-52e9-a048-38db1efb6c8d
+        descriptor_invariant_id: 4g9b6f2c-79g2-53f6-b159-49ec2fgc7d9e
+        descriptor_version: 1.0.0
+        schema_version: 2.0
+        function_description: Test orchestration framework for O-RAN gNB
+        provider: Nino
+        application_name: rapp-gnb-test
+        application_version: 1.0.0
+        sme_enabled: true

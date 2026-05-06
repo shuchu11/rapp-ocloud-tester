@@ -1,0 +1,14 @@
+[
+  {
+    "apiInvokerInformation": "DO_NOT_CHANGE_THIS_RAPP_INSTANCE_ID",
+    "apiList": [
+      { "apiName": "gNB Test Orchestrator API" }
+    ],
+    "notificationDestination": "http://NOT_USED_HERE",
+    "onboardingInformation": {
+      "apiInvokerPublicKey": "{PUBLIC_KEY_INVOKER}",
+      "apiInvokerCertificate": "apiInvokerCertificate"
+    },
+    "requestTestNotification": true
+  }
+]

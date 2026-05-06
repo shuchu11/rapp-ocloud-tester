@@ -1,0 +1,65 @@
+tosca_definitions_version: tosca_simple_yaml_1_2
+
+description: ASD TOSCA types
+
+data_types:
+  onap.datatypes.ToscaConceptIdentifier:
+    derived_from: tosca.datatypes.Root
+    properties:
+      name:
+        type: string
+        required: true
+      version:
+        type: string
+        required: true
+
+artifact_types:
+  tosca.artifacts.asd.deploymentItem:
+    description: "Describes the artifact type of asd deployment item"
+    properties:
+      item_id:
+        type: integer
+        required: true
+      artifact_type:
+        type: string
+        required: true
+      target_server:
+        type: string
+        required: false
+      target_server_uri:
+        type: string
+        required: false
+
+node_types:
+  tosca.nodes.asd:
+    derived_from: tosca.nodes.Root
+    version: 0.1
+    properties:
+      descriptor_id:
+        type: string
+        required: true
+      descriptor_invariant_id:
+        type: string
+        required: true
+      descriptor_version:
+        type: string
+        required: true
+      schema_version:
+        type: string
+        required: true
+      function_description:
+        type: string
+        required: false
+      provider:
+        type: string
+        required: true
+      application_name:
+        type: string
+        required: true
+      application_version:
+        type: string
+        required: true
+      sme_enabled:
+        type: boolean
+        required: false
+        default: false

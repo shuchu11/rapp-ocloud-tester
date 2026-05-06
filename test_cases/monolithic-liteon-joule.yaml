@@ -1,26 +1,28 @@
 testId: mono-liteon-joule-cpu-bandwidth
 testType: BANDWIDTH_SCALING
-description: "Bandwidth baseline test with 100Mbps iperf load - Pegatron O-RU - Max CPU"
-mode: monolithic
+description: "Monolithic test - LiteON O-RU - Joule"
 target:
     oduUrn: urn:o-ran:gnb:joule-liteon
     cellUrn: urn:o-ran:cell:joule-liteon
     sideloadInstanceId: 139d2f51-b3c2-4a94-a6a3-401464537f23
     cluster: cc1397ba-b1c4-4a3e-bc8d-6af58ef53818
-    branch: starlingx/liteon
+nf:
+  - artifactName: oai-gnb-fhi-72
     artifactRepoUrl: https://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@github.com/motangpuar/ocloud-helm-templates.git
-    artifactName: oai-gnb-fhi-72
+    branch: starlingx/liteon
+    image:
+      repository: oaisoftwarealliance/oai-gnb-fhi72
+      version: 2026.w04
+    parameters:
+        wr_isolcpus: [8,14]
+        iperf_bandwidth_mbps: [100,400,700]
+    baseline:
+      wr_isolcpus: 10
+      memory: 32Gi
+      hugepages: 10Gi
+    extra:
+      amfhost: 192.168.8.103
 execution:
-    runsPerCase: 3
+    runsPerCase: 1
     stabilizationTime: 30
     iperfDuration: 60
-parameters:
-    wr_isolcpus: [8,14]
-    iperf_bandwidth_mbps: [100,400,700]
-baseline:
-  wr_isolcpus: 10
-  memory: 32Gi
-  hugepages: 32Gi
-extra:
-  amfhost: 192.168.8.82
-

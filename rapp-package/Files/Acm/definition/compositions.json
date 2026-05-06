@@ -1,0 +1,91 @@
+{
+  "tosca_definitions_version": "tosca_simple_yaml_1_2",
+  "data_types": {
+    "onap.datatypes.ToscaConceptIdentifier": {
+      "derived_from": "tosca.datatypes.Root",
+      "properties": {
+        "name": { "type": "string", "required": true },
+        "version": { "type": "string", "required": true }
+      }
+    }
+  },
+  "node_types": {
+    "org.onap.policy.clamp.acm.Participant": {
+      "version": "1.0.1",
+      "derived_from": "tosca.nodes.Root"
+    },
+    "org.onap.policy.clamp.acm.AutomationComposition": {
+      "version": "1.0.1",
+      "derived_from": "tosca.nodes.Root",
+      "properties": {
+        "elements": { "type": "list", "required": true }
+      }
+    },
+    "org.onap.policy.clamp.acm.AutomationCompositionElement": {
+      "version": "1.0.0",
+      "derived_from": "tosca.nodes.Root",
+      "properties": {
+        "participantType": { "type": "onap.datatypes.ToscaConceptIdentifier", "required": true }
+      }
+    },
+    "org.onap.policy.clamp.acm.K8SMicroserviceAutomationCompositionElement": {
+      "version": "1.0.0",
+      "derived_from": "org.onap.policy.clamp.acm.AutomationCompositionElement",
+      "properties": {
+        "chart": { "type": "string", "required": true },
+        "releaseName": { "type": "string", "required": true },
+        "namespace": { "type": "string", "required": true },
+        "overrideParams": { "type": "string", "required": false }
+      }
+    }
+  },
+  "topology_template": {
+    "node_templates": {
+      "org.onap.policy.clamp.acm.K8SParticipant": {
+        "version": "2.3.4",
+        "type": "org.onap.policy.clamp.acm.Participant",
+        "type_version": "1.0.1",
+        "description": "Participant for Kubernetes",
+        "properties": {
+          "provider": "ONAP"
+        }
+      },
+      "onap.policy.clamp.ac.element.rapp-gnb-test": {
+        "version": "1.0.0",
+        "type": "org.onap.policy.clamp.acm.K8SMicroserviceAutomationCompositionElement",
+        "type_version": "1.0.0",
+        "description": "Automation composition element for gNB Test Framework",
+        "properties": {
+          "participantType": {
+            "name": "onap-policy-clamp-ac-k8s-ppnt",
+            "version": "2.3.4"
+          },
+          "startPhase": 0
+        }
+      },
+      "onap.policy.clamp.ac.element.rapp-gnb-test-dme-http": {
+        "version": "1.0.0",
+        "type": "org.onap.policy.clamp.acm.AutomationCompositionElement",
+        "type_version": "1.0.0",
+        "description": "Minimal DME placeholder using HTTP participant",
+        "properties": {
+          "participantType": {
+            "name": "onap-policy-clamp-ac-http-ppnt",
+            "version": "2.3.4"
+          },
+          "startPhase": 0
+        }
+      },
+      "onap.policy.clamp.ac.element.AutomationCompositionDefinition": {
+        "version": "1.0.0",
+        "type": "org.onap.policy.clamp.acm.AutomationComposition",
+        "type_version": "1.0.1",
+        "description": "Automation composition definition for gNB Test Framework",
+        "properties": {
+          "provider": "ONAP",
+          "elements": "[ { \"name\": \"onap.policy.clamp.ac.element.rapp-gnb-test\", \"version\": \"1.0.0\" } ]"
+        }
+      }
+    }
+  }
+}
